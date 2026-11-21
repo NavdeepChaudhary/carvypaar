@@ -1,0 +1,64 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ---------- Theme tokens (RGB channels so Tailwind opacity modifiers work) ---------- */
+:root {
+  --bg: 244 245 247;
+  --surface: 255 255 255;
+  --elevated: 236 238 242;
+  --fg: 14 16 21;
+  --muted: 88 96 110;
+  --line: 218 222 229;
+  /* Chart series hue (validated: lightness band, chroma, >=3:1 on the chart surface) */
+  --viz-1: #0891b2;
+  color-scheme: light;
+}
+
+.dark {
+  --bg: 7 8 11;
+  --surface: 18 20 26;
+  --elevated: 28 31 39;
+  --fg: 240 242 246;
+  --muted: 148 156 171;
+  --line: 42 46 57;
+  --viz-1: #0aa0c2; /* dark step of the same hue, validated against the dark surface */
+  color-scheme: dark;
+}
+
+@layer base {
+  body {
+    @apply bg-bg text-fg font-sans antialiased;
+  }
+  ::selection {
+    @apply bg-accent/80 text-white;
+  }
+  /* Visible keyboard focus everywhere (accessibility). */
+  :focus-visible {
+    @apply outline-none ring-2 ring-accent ring-offset-2 ring-offset-bg;
+  }
+}
+
+@layer components {
+  .glass {
+    @apply border border-line/60 bg-surface/60 backdrop-blur-xl;
+  }
+  .container-page {
+    @apply mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8;
+  }
+  .text-gradient {
+    @apply bg-gradient-to-r from-accent via-accent-soft to-neon bg-clip-text text-transparent;
+  }
+  .neon-line {
+    @apply h-px w-full bg-gradient-to-r from-transparent via-accent to-transparent;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}

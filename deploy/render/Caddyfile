@@ -1,0 +1,36 @@
+# Internal proxy for the single-container image. The platform (Render) terminates HTTPS
+# in front of us and forwards plain HTTP to $PORT.
+{
+	admin off
+	auto_https off
+	servers {
+		# Take the real client IP from the platform's load balancer (private network), so
+		# rate limits and login lockouts see users, not the proxy.
+		trusted_proxies static private_ranges
+		client_ip_headers X-Forwarded-For
+	}
+}
+
+:{$PORT} {
+	encode zstd gzip
+
+	@api path /api/* /uploads/*
+	handle @api {
+		reverse_proxy 127.0.0.1:8000 {
+			header_up X-Forwarded-For {client_ip}
+		}
+	}
+
+	# API docs are disabled in production; never expose them.
+	@docs path /docs* /openapi.json /redoc*
+	respond @docs 404
+
+	handle {
+		reverse_proxy 127.0.0.1:3000
+	}
+
+	header {
+		-Server
+		-X-Powered-By
+	}
+}

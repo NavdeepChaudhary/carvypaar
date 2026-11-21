@@ -1,0 +1,48 @@
+# Render Blueprint for the CarvyPaar BACKEND (the website itself runs on Vercel).
+# Render dashboard -> New -> Blueprint -> pick this GitHub repository -> Apply.
+# When asked for CORS_ORIGINS, enter your Vercel address, e.g. https://carvypaar.vercel.app
+# Docs: https://render.com/docs/blueprint-spec
+services:
+  - type: web
+    name: carvypaar-api          # -> https://carvypaar-api.onrender.com (a variant if the name is taken)
+    runtime: docker
+    plan: free
+    region: singapore            # closest Render region to India (Vercel uses Mumbai)
+    dockerfilePath: ./deploy/render/api.Dockerfile
+    dockerContext: .
+    healthCheckPath: /api/health
+    autoDeploy: true
+    envVars:
+      - key: SECRET_KEY
+        generateValue: true      # strong random secret, created by Render
+      - key: DATABASE_URL
+        fromDatabase:
+          name: carvypaar-db
+          property: connectionString
+      - key: REDIS_URL
+        fromService:
+          type: keyvalue
+          name: carvypaar-redis
+          property: connectionString
+      - key: CORS_ORIGINS
+        sync: false              # your Vercel URL (https://...vercel.app); Render asks for it on first deploy
+      - key: REQUIRE_LISTING_APPROVAL
+        value: "true"
+      - key: WEB_CONCURRENCY
+        value: "1"               # free instances have 512 MB RAM
+      - key: GOOGLE_CLIENT_ID
+        sync: false              # optional: enables "Sign in with Google"
+
+  - type: keyvalue
+    name: carvypaar-redis
+    plan: free
+    region: singapore            # closest Render region to India (Vercel uses Mumbai)
+    maxmemoryPolicy: allkeys-lru
+    ipAllowList: []              # only reachable from your Render services
+
+databases:
+  - name: carvypaar-db
+    plan: free
+    region: singapore            # closest Render region to India (Vercel uses Mumbai)
+    databaseName: carvypaar
+    user: carvypaar

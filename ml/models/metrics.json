@@ -1,0 +1,78 @@
+{
+  "version": "hgb-20261121123232",
+  "trained_at": "2026-11-21T12:32:32.526644+00:00",
+  "sklearn_version": "1.9.1",
+  "python_version": "3.14.6",
+  "features": [
+    "make",
+    "model",
+    "fuel_type",
+    "transmission",
+    "body_type",
+    "condition",
+    "location",
+    "year",
+    "mileage"
+  ],
+  "categorical": [
+    "make",
+    "model",
+    "fuel_type",
+    "transmission",
+    "body_type",
+    "condition",
+    "location"
+  ],
+  "numeric": [
+    "year",
+    "mileage"
+  ],
+  "interval": [
+    0.1,
+    0.9
+  ],
+  "interval_adjust_log": 0.050627,
+  "rows": 6923,
+  "train_rows": 5538,
+  "test_rows": 1385,
+  "sources": {
+    "cardekho": 6923
+  },
+  "metrics": {
+    "mae": 124376.3887,
+    "median_ae": 57500.0825,
+    "mape": 0.1761,
+    "r2": 0.7907,
+    "r2_log": 0.9036,
+    "interval_coverage": 0.7819,
+    "interval_width_pct": 0.4819,
+    "raw_interval_coverage": 0.67,
+    "baseline_mae": 207376.1733
+  },
+  "feature_importance": {
+    "year": 0.4723,
+    "model": 0.3892,
+    "make": 0.0635,
+    "body_type": 0.0324,
+    "transmission": 0.021,
+    "fuel_type": 0.0093,
+    "mileage": 0.0074,
+    "condition": 0.0049,
+    "location": 0.0
+  },
+  "baseline": {
+    "make": "maruti suzuki",
+    "model": "swift",
+    "fuel_type": "diesel",
+    "transmission": "manual",
+    "body_type": "hatchback",
+    "condition": "good",
+    "location": "unknown",
+    "year": 2020,
+    "mileage": 70000
+  },
+  "price_range": [
+    67660,
+    3629699
+  ]
+}

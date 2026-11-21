@@ -1,0 +1,11 @@
+# Keep scikit-learn pinned to EXACTLY the version in backend/requirements.txt:
+# a model pickled by one scikit-learn version may not load in another.
+scikit-learn==1.9.1
+pandas>=2.2,<4
+numpy>=2.1,<3
+joblib>=1.4,<2
+
+# Optional: only needed for scripts/download_data.py (public Kaggle dataset)
+kagglehub>=0.3
+
+pytest>=8.3

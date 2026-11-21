@@ -1,0 +1,9 @@
+# Keep LF endings for scripts that run inside Linux containers.
+*.sh text eol=lf
+Dockerfile text eol=lf
+Caddyfile text eol=lf
+# Binary artifacts
+*.joblib binary
+*.png binary
+*.jpg binary
+*.webp binary

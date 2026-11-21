@@ -1,0 +1,42 @@
+# Secrets
+.env
+.env.local
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+.pytest_cache/
+backend/*.db
+backend/uploads/*
+!backend/uploads/.gitkeep
+
+# ML artifacts (regenerable: python ml/scripts/train.py)
+ml/data/raw/*
+!ml/data/raw/.gitkeep
+ml/data/processed/*.csv
+ml/models/*.joblib
+# ...except the shipped model (1.2 MB): the deploy image bakes it in. Retrain + commit to update.
+!ml/models/price_model.joblib
+ml/models/*.tmp
+
+# Node / Next.js
+node_modules/
+frontend/.next/
+frontend/out/
+frontend/next-env.d.ts
+*.tsbuildinfo
+
+# OS / editors
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# Production secrets
+.env.production
+backups/
+
+# Test artifacts
+.coverage
+htmlcov/

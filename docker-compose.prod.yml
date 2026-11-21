@@ -1,0 +1,111 @@
+# CarvyPaar production stack (single server).
+#
+#   cp .env.production.example .env.production   # fill in DOMAIN + secrets
+#   docker compose -f docker-compose.prod.yml --env-file .env.production up -d --build
+#
+# Only Caddy is exposed (80/443). It terminates TLS (automatic Let's Encrypt certificates)
+# and serves the web app and the API from ONE origin:
+#   https://$DOMAIN/            -> frontend (Next.js)
+#   https://$DOMAIN/api/*, /uploads/*  -> backend (FastAPI, incl. WebSockets)
+# One origin means simple cookies, minimal CORS and no mixed-content surprises.
+
+x-restart: &restart
+  restart: unless-stopped
+
+services:
+  caddy:
+    image: caddy:2.8-alpine
+    <<: *restart
+    ports:
+      - "80:80"
+      - "443:443"
+      - "443:443/udp" # HTTP/3
+    environment:
+      DOMAIN: ${DOMAIN:?Set DOMAIN in .env.production}
+      ACME_EMAIL: ${ACME_EMAIL:?Set ACME_EMAIL (for Let's Encrypt expiry notices)}
+    volumes:
+      - ./deploy/Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+    depends_on:
+      - frontend
+      - backend
+
+  db:
+    image: postgres:16-alpine
+    <<: *restart
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-carvypaar}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB:-carvypaar}
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    # No ports: reachable only by the backend on the internal network.
+
+  redis:
+    image: redis:7-alpine
+    <<: *restart
+    command: ["redis-server", "--appendonly", "no", "--save", "", "--maxmemory", "128mb", "--maxmemory-policy", "allkeys-lru"]
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  ml:
+    build: ./ml
+    volumes:
+      - ml_models:/ml/models
+      - ml_data:/ml/data/processed
+
+  backend:
+    build: ./backend
+    <<: *restart
+    env_file: .env.production
+    environment:
+      ENVIRONMENT: production
+      DATABASE_URL: postgresql+psycopg://${POSTGRES_USER:-carvypaar}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB:-carvypaar}
+      REDIS_URL: redis://redis:6379/0
+      CORS_ORIGINS: https://${DOMAIN}
+      PUBLIC_BASE_URL: https://${DOMAIN}
+      COOKIE_SECURE: "true"
+      UPLOAD_DIR: /app/uploads
+      PRICE_MODEL_PATH: /app/ml_models/price_model.joblib
+      ML_DATA_DIR: /app/ml_data
+      # Safe ONLY because the backend has no published port: every request comes via Caddy.
+      FORWARDED_ALLOW_IPS: "*"
+      WEB_CONCURRENCY: ${WEB_CONCURRENCY:-2}
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      ml:
+        condition: service_completed_successfully
+    volumes:
+      - uploads:/app/uploads
+      - ml_models:/app/ml_models:ro
+      - ml_data:/app/ml_data
+
+  frontend:
+    build:
+      context: ./frontend
+      args:
+        NEXT_PUBLIC_API_URL: https://${DOMAIN}
+    <<: *restart
+    depends_on:
+      backend:
+        condition: service_healthy
+
+volumes:
+  pgdata:
+  uploads:
+  ml_models:
+  ml_data:
+  caddy_data:
+  caddy_config:

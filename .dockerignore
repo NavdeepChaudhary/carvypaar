@@ -1,0 +1,16 @@
+# Build context for the root (single-container) Dockerfile.
+**/node_modules
+**/.next
+**/.venv
+**/__pycache__
+**/.pytest_cache
+**/*.db
+**/.env
+**/.env.*
+!**/.env.example
+!**/.env.production.example
+backend/uploads/*
+backups
+ml/data
+.git
+.github

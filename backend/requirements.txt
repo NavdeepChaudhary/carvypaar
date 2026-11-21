@@ -1,0 +1,33 @@
+# --- Web framework ---
+fastapi>=0.115,<1.0
+uvicorn>=0.32,<1.0
+websockets>=13.0
+python-multipart>=0.0.18
+
+# --- Data / validation ---
+pydantic>=2.10,<3.0
+pydantic-settings>=2.6,<3.0
+email-validator>=2.2,<3.0
+
+# --- Database ---
+SQLAlchemy>=2.0.36,<2.1
+alembic>=1.14,<2.0
+psycopg[binary]>=3.2,<4.0
+
+# --- Auth / security ---
+PyJWT[crypto]>=2.10,<3.0  # crypto: RS256 verification of Google ID tokens
+bcrypt>=4.2,<6.0
+slowapi>=0.1.9,<0.2
+
+# --- Images (used from Phase 2 for upload validation) ---
+Pillow>=11.0
+
+# --- ML inference (price predictor, Phase 4) ---
+# scikit-learn MUST match ml/requirements.txt exactly (pickled model compatibility).
+scikit-learn==1.9.1
+pandas>=2.2,<4
+numpy>=2.1,<3
+joblib>=1.4,<2
+
+# --- Optional scale-out (REDIS_URL): shared rate limits, login lockouts, WebSocket fan-out ---
+redis>=5.0,<9
