@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { Inter, Orbitron } from "next/font/google";
 import type { ReactNode } from "react";
 
+import { DemoBanner } from "@/components/DemoBanner";
 import { Footer } from "@/components/Footer";
 import { Navbar } from "@/components/Navbar";
 import { Providers } from "@/components/Providers";
@@ -45,6 +46,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
             {children}
           </main>
           <Footer />
+          <DemoBanner />
         </Providers>
       </body>
     </html>

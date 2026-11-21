@@ -11,7 +11,7 @@ import { Button } from "@/components/ui/Button";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { Pagination } from "@/components/ui/Pagination";
 import { useAuth } from "@/context/AuthContext";
-import { ApiError } from "@/lib/api";
+import { ApiError, STATIC_DEMO } from "@/lib/api";
 import { auctionsApi, type AuctionTab } from "@/lib/auctions";
 import type { AuctionCard as AuctionCardData, Page } from "@/lib/types";
 
@@ -85,8 +85,8 @@ function Auctions() {
 
       <section className="mt-8" aria-busy={!data && !error}>
         {error ? (
-          <EmptyState icon={AlertTriangle} title="Something went wrong" body={error}
-            action={<Button onClick={() => setReload((r) => r + 1)}>Try again</Button>} />
+          <EmptyState icon={AlertTriangle} title={STATIC_DEMO ? "Preview only" : "Something went wrong"} body={error}
+            action={STATIC_DEMO ? undefined : <Button onClick={() => setReload((r) => r + 1)}>Try again</Button>} />
         ) : !data ? (
           <div className="grid gap-5 sm:grid-cols-2 xl:grid-cols-3">
             {Array.from({ length: 6 }, (_, i) => <AuctionCardSkeleton key={i} />)}

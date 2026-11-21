@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 
-import { getAccessToken, refreshSession, wsBase } from "@/lib/api";
+import { STATIC_DEMO, getAccessToken, refreshSession, wsBase } from "@/lib/api";
 
 export type SocketStatus = "connecting" | "open" | "reconnecting" | "closed";
 
@@ -47,7 +47,7 @@ export function useSocket(path: string, onMessage: (msg: SocketMessage) => void,
   };
 
   useEffect(() => {
-    if (!enabled) return;
+    if (!enabled || STATIC_DEMO) return; // no server to connect to in the GitHub Pages preview
     let attempt = 0;
     let stopped = false;
     let retryTimer: number | undefined;

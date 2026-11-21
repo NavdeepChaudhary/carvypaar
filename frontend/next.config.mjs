@@ -4,8 +4,12 @@
 //    site and Next.js rewrites it to the backend, so the refresh cookie stays first-party.
 //    WebSockets can't be proxied by Vercel, so they connect to the backend directly.
 //  * otherwise NEXT_PUBLIC_API_URL ("" = same origin, e.g. behind Caddy; default localhost:8000).
-const backendUrl = process.env.BACKEND_URL?.replace(/\/$/, "") || null;
-const rawApi = backendUrl ? "" : (process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8000");
+//  * GITHUB_PAGES=true: a static, backend-less PREVIEW exported for GitHub Pages
+//    (see .github/workflows/pages.yml). API features are disabled with a notice.
+const isPages = process.env.GITHUB_PAGES === "true";
+const basePath = isPages ? (process.env.PAGES_BASE_PATH ?? "").replace(/\/$/, "") : "";
+const backendUrl = isPages ? null : process.env.BACKEND_URL?.replace(/\/$/, "") || null;
+const rawApi = isPages || backendUrl ? "" : (process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8000");
 const wsDirect = backendUrl ? backendUrl.replace(/^http/, "ws") : "";
 const apiUrl = rawApi ? new URL(rawApi) : null;
 const isDev = process.env.NODE_ENV !== "production";
@@ -77,4 +81,20 @@ const nextConfig = {
   },
 };
 
-export default nextConfig;
+// GitHub Pages serves plain files: no server, so no rewrites or custom headers (and the
+// security headers/CSP above can't be applied there; that's a host limitation).
+const pagesConfig = {
+  output: "export",
+  basePath,
+  trailingSlash: true, // /cars/ -> cars/index.html, which GitHub Pages serves natively
+  reactStrictMode: true,
+  images: { unoptimized: true },
+  env: {
+    NEXT_PUBLIC_API_URL: "",
+    NEXT_PUBLIC_WS_URL: "",
+    NEXT_PUBLIC_STATIC_DEMO: "1",
+    NEXT_PUBLIC_BASE_PATH: basePath,
+  },
+};
+
+export default isPages ? pagesConfig : nextConfig;

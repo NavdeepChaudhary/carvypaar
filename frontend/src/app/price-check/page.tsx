@@ -13,7 +13,7 @@ import { Speedometer } from "@/components/price/Speedometer";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
 import { Select } from "@/components/ui/Select";
-import { ApiError } from "@/lib/api";
+import { ApiError, DEMO_MESSAGE, STATIC_DEMO } from "@/lib/api";
 import { BODY_OPTIONS, CONDITION_OPTIONS, FUEL_OPTIONS, TRANSMISSION_OPTIONS } from "@/lib/constants";
 import { formatNumber, formatPrice } from "@/lib/format";
 import { listingsApi } from "@/lib/listings";
@@ -110,7 +110,9 @@ export default function PriceCheckPage() {
       {info && !info.available && (
         <div role="alert" className="mt-6 flex items-start gap-3 rounded-2xl border border-amber-500/40 bg-amber-500/10 p-4 text-sm text-amber-300">
           <AlertTriangle className="mt-0.5 h-5 w-5 shrink-0" aria-hidden />
-          The price model isn&apos;t trained yet. Run <code className="rounded bg-black/30 px-1.5">python ml/scripts/train.py</code> and refresh.
+          {STATIC_DEMO ? DEMO_MESSAGE : (
+            <>The price model isn&apos;t trained yet. Run <code className="rounded bg-black/30 px-1.5">python ml/scripts/train.py</code> and refresh.</>
+          )}
         </div>
       )}
 

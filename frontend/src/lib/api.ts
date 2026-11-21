@@ -11,6 +11,11 @@ import type { AuthResponse } from "./types";
 // "" = same origin (the API is served under /api by the same host, e.g. behind Caddy).
 export const API_URL = (process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8000").replace(/\/$/, "");
 
+/** GitHub Pages preview: there is no backend, so API calls fail fast with a clear message. */
+export const STATIC_DEMO = process.env.NEXT_PUBLIC_STATIC_DEMO === "1";
+export const DEMO_MESSAGE =
+  "This is a preview on GitHub Pages. Signing in, listings, auctions and price checks need the CarvyPaar server, which isn't connected here.";
+
 let accessToken: string | null = null;
 type SessionListener = (session: AuthResponse | null) => void;
 const listeners = new Set<SessionListener>();
@@ -76,6 +81,7 @@ export function extractMessage(body: unknown, fallback: string): string {
 let refreshPromise: Promise<AuthResponse | null> | null = null;
 
 export function refreshSession(): Promise<AuthResponse | null> {
+  if (STATIC_DEMO) return Promise.resolve(null); // no backend in the Pages preview
   if (!refreshPromise) {
     refreshPromise = fetch(`${API_URL}/api/auth/refresh`, { method: "POST", credentials: "include" })
       .then(async (res) => {
@@ -102,6 +108,7 @@ interface RequestOptions extends Omit<RequestInit, "body"> {
 }
 
 export async function apiFetch<T>(path: string, options: RequestOptions = {}, retried = false): Promise<T> {
+  if (STATIC_DEMO) throw new ApiError(DEMO_MESSAGE, 0);
   const { body, auth = true, headers, ...rest } = options;
   const finalHeaders = new Headers(headers);
   const isForm = typeof FormData !== "undefined" && body instanceof FormData;

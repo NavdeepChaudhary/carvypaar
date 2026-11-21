@@ -12,7 +12,7 @@ import { Modal } from "@/components/ui/Modal";
 import { Pagination } from "@/components/ui/Pagination";
 import { Select } from "@/components/ui/Select";
 import { useAuth } from "@/context/AuthContext";
-import { ApiError } from "@/lib/api";
+import { ApiError, STATIC_DEMO } from "@/lib/api";
 import {
   BODY_OPTIONS,
   CONDITION_OPTIONS,
@@ -207,9 +207,9 @@ function BrowseCars() {
           {error ? (
             <EmptyState
               icon={AlertTriangle}
-              title="Something went wrong"
+              title={STATIC_DEMO ? "Preview only" : "Something went wrong"}
               body={error}
-              action={<Button onClick={() => setReloadKey((k) => k + 1)}>Try again</Button>}
+              action={STATIC_DEMO ? undefined : <Button onClick={() => setReloadKey((k) => k + 1)}>Try again</Button>}
             />
           ) : loading && !data ? (
             <div className="grid gap-5 sm:grid-cols-2 xl:grid-cols-3">
