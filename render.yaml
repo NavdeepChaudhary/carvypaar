@@ -32,6 +32,11 @@ services:
         value: "1"               # free instances have 512 MB RAM
       - key: GOOGLE_CLIENT_ID
         sync: false              # optional: enables "Sign in with Google"
+      # First admin account (free plan has no shell). Use a strong, unique password.
+      - key: BOOTSTRAP_ADMIN_EMAIL
+        sync: false
+      - key: BOOTSTRAP_ADMIN_PASSWORD
+        sync: false
 
   - type: keyvalue
     name: carvypaar-redis
