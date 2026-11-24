@@ -2,7 +2,7 @@
 import pytest
 
 from app.services.storage import LocalStorage
-from tests.conftest import auth_header
+from tests.conftest import DEFAULT_PASSWORD, auth_header
 
 
 def test_update_profile(client, register_user):
@@ -32,6 +32,23 @@ def test_profile_update_cannot_escalate_role(client, register_user):
     res = client.patch("/api/users/me", headers=auth_header(tokens["access_token"]), json={"role": "admin"})
     assert res.status_code == 200
     assert res.json()["role"] == "buyer"  # unknown fields are ignored
+
+
+def test_change_password_revokes_sessions(client, register_user):
+    tokens = register_user("pw@example.com")
+    headers = auth_header(tokens["access_token"])
+
+    bad = client.post("/api/users/me/password", headers=headers,
+                      json={"current_password": "nope", "new_password": "N3wPassword!"})
+    assert bad.status_code == 400
+
+    ok = client.post("/api/users/me/password", headers=headers,
+                     json={"current_password": DEFAULT_PASSWORD, "new_password": "N3wPassword!"})
+    assert ok.status_code == 204
+    # Old refresh token is revoked; new password works; old one doesn't.
+    assert client.post("/api/auth/refresh", json={"refresh_token": tokens["refresh_token"]}).status_code == 401
+    assert client.post("/api/auth/login", json={"email": "pw@example.com", "password": "N3wPassword!"}).status_code == 200
+    assert client.post("/api/auth/login", json={"email": "pw@example.com", "password": DEFAULT_PASSWORD}).status_code == 401
 
 
 def test_public_profile_hides_private_fields(client, register_user):

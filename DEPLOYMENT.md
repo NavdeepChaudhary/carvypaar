@@ -89,7 +89,7 @@ The backend refuses to start in production with unsafe settings: a weak `SECRET_
 | `SECRET_KEY` | dev placeholder | 32+ random chars. Rotating it signs everyone out |
 | `DATABASE_URL` | SQLite file | Set by compose in prod (`postgresql+psycopg://…`) |
 | `REDIS_URL` | unset | Enables cross-worker WebSockets, rate limits and lockouts |
-| `CLERK_PUBLISHABLE_KEY` / `CLERK_SECRET_KEY` | unset | Clerk API keys; required for sign-in. The website needs the publishable key too, as `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY` (build-time) |
+| `GOOGLE_CLIENT_ID` | unset | Enables "Sign in with Google". Add `https://$DOMAIN` as an authorised JavaScript origin |
 | `CORS_ORIGINS` | localhost:3000 | Comma-separated, `https://` only in production |
 | `COOKIE_SECURE` | false | **true** in production (compose sets it) |
 | `REQUIRE_LISTING_APPROVAL` | true | New listings wait for admin approval |

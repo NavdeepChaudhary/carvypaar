@@ -12,9 +12,11 @@ from app.core.security import (
     create_access_token,
     create_refresh_token,
     decode_token,
+    dummy_verify,
     ensure_aware,
     hash_password,
     utcnow,
+    verify_password,
 )
 from app.models import RefreshToken, User, UserRole
 
@@ -47,6 +49,24 @@ def register_user(
     db.add(user)
     db.commit()
     db.refresh(user)
+    return user
+
+
+def authenticate(db: Session, email: str, password: str) -> User:
+    user = get_user_by_email(db, email)
+    if user is None:
+        dummy_verify()  # constant-ish time to avoid account enumeration
+        raise AuthError("Incorrect email or password")
+    if user.hashed_password is None:
+        # Google-only account: same generic error (no hint that the account exists).
+        dummy_verify()
+        raise AuthError("Incorrect email or password")
+    if not verify_password(password, user.hashed_password):
+        raise AuthError("Incorrect email or password")
+    if not user.is_active:
+        raise AuthError("This account has been deactivated", status_code=403)
+    user.last_login_at = utcnow()
+    db.commit()
     return user
 
 
@@ -122,3 +142,15 @@ def revoke_refresh_token(db: Session, token: str) -> None:
     if row is not None and row.revoked_at is None:
         row.revoked_at = utcnow()
         db.commit()
+
+
+def change_password(db: Session, user: User, current: str | None, new: str) -> None:
+    if user.hashed_password is not None:
+        if not current or not verify_password(current, user.hashed_password):
+            raise AuthError("Current password is incorrect", status_code=400)
+        if verify_password(new, user.hashed_password):
+            raise AuthError("New password must be different from the current one", status_code=400)
+    # else: a Google-only account is setting its first password (it's already signed in).
+    user.hashed_password = hash_password(new)
+    db.commit()
+    revoke_all_user_tokens(db, user.id)  # sign out every other session

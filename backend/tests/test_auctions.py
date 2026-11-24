@@ -359,9 +359,7 @@ def test_admin_can_delete_listing_with_bids_cleanly(client, people, db_session):
     db_session.add(User(email="boss@example.com", full_name="Boss", role=UserRole.ADMIN,
                         hashed_password=hash_password("Adm1nPass!")))
     db_session.commit()
-    from tests.conftest import clerk_token
-
-    admin = client.post("/api/auth/clerk", json={"token": clerk_token("boss@example.com")}).json()
+    admin = client.post("/api/auth/login", json={"email": "boss@example.com", "password": "Adm1nPass!"}).json()
     with warnings.catch_warnings():
         warnings.simplefilter("error")  # an SAWarning would fail the test
         res = client.delete(f"/api/listings/{detail['listing']['id']}", headers=auth_header(admin["access_token"]))

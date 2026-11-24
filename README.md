@@ -6,7 +6,7 @@ A car marketplace for enthusiasts: buy, sell and **auction** cars, with an **AI 
 |-----------|-------|
 | Backend   | Python 3.11+, FastAPI, SQLAlchemy 2.0, Alembic, Pydantic v2 |
 | Database  | PostgreSQL (Docker) · SQLite (local dev) |
-| Auth      | Clerk sign-in, then JWT access + rotating refresh tokens (httpOnly cookie), roles: buyer / seller / admin |
+| Auth      | JWT access + rotating refresh tokens (httpOnly cookie), bcrypt, roles: buyer / seller / admin |
 | Frontend  | Next.js 15 (App Router) · React 19 · TypeScript · Tailwind CSS · Framer Motion |
 | ML        | scikit-learn gradient boosting + conformal price ranges, pandas, joblib |
 | DevOps    | Docker + docker-compose |
@@ -100,11 +100,13 @@ npm run typecheck && npm run build
 | Method | Path | Auth | Notes |
 |--------|------|------|-------|
 | GET    | `/api/health` | – | liveness + DB check |
-| POST   | `/api/auth/clerk` | Clerk session token | sign in (creates or links the account); 20/min per IP |
+| POST   | `/api/auth/register` | – | buyer/seller only; 5/min per IP |
+| POST   | `/api/auth/login` | – | 10/min per IP |
 | POST   | `/api/auth/refresh` | cookie or body | rotates refresh token |
 | POST   | `/api/auth/logout` | cookie or body | revokes refresh token |
 | GET    | `/api/users/me` | Bearer | own profile |
 | PATCH  | `/api/users/me` | Bearer | name, phone, bio, location |
+| POST   | `/api/users/me/password` | Bearer | revokes all sessions |
 | GET    | `/api/users/{id}` | – | public profile (no email/phone) |
 | POST   | `/api/users/me/become-seller` | Bearer | buyer → seller |
 | GET    | `/api/users/me/listings` · `/me/favorites` | Bearer | my garage |
@@ -237,6 +239,7 @@ stay internal. Two API workers share WebSockets, rate limits and lockouts throug
 
 **Hardening added in Phase 6:**
 - **Request size limits:** 413 before parsing, including chunked uploads.
+- **Login lockout** per email and IP.
 - **JWT tokens:** issuer and audience are now verified.
 - **A common-password denylist.**
 - **Production config guards:** secure cookies, HTTPS-only CORS, PostgreSQL required, strong secret required.
@@ -246,38 +249,34 @@ stay internal. Two API workers share WebSockets, rate limits and lockouts throug
 - **Optional Redis fan-out** for running several workers.
 - **A patched PostCSS** in place of the vulnerable copy Next.js bundles.
 
-## Sign-in (Clerk)
+## Sign in with Google
 
-Sign-up, sign-in, passwords, "Continue with Google", email verification and password resets
-are handled by [Clerk](https://clerk.com).
+Optional. Without a client ID the button simply doesn't appear.
 
-1. Create an application at [dashboard.clerk.com](https://dashboard.clerk.com) and turn on the sign-in
-   methods you want (email + password, Google, ...).
-2. Copy the keys from **API keys**:
-   - API (`.env`, Render): `CLERK_PUBLISHABLE_KEY=pk_...` and `CLERK_SECRET_KEY=sk_...`
-   - Website (`frontend/.env.local`, Vercel): `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=pk_...`
-3. Restart the API and rebuild the website.
+1. Go to [Google Cloud Console → APIs & Services → Credentials](https://console.cloud.google.com/apis/credentials).
+   Configure the **OAuth consent screen** (External, app name "CarvyPaar", scopes: `email`, `profile`, `openid`).
+2. Choose **Create credentials → OAuth client ID → Web application**. Under **Authorised JavaScript origins**, add
+   `http://localhost:3000` (dev) and `https://your-domain` (prod). No redirect URIs are needed.
+3. Put the client ID in `.env` (or `.env.production`): `GOOGLE_CLIENT_ID=…apps.googleusercontent.com`,
+   then restart the API. No client secret is needed.
 
-**How it works:** after Clerk signs someone in, the browser posts its Clerk session token to
-`POST /api/auth/clerk`. The API:
-- verifies it (RS256 signature against the Clerk instance's published keys, issuer, expiry, and that it
-  was issued for one of our `CORS_ORIGINS`);
-- reads the person's verified email from Clerk's Backend API;
-- finds the user by their Clerk ID, links an existing account with the same verified email, or creates a
-  new buyer account;
-- issues the normal CarvyPaar session (short access token + rotating refresh cookie).
+**How it works:** Google Identity Services gives the browser a signed ID token. `POST /api/auth/google`
+then:
+- verifies it (RS256 signature against Google's published keys, `aud` = your client ID, issuer, expiry, verified email);
+- finds the user by Google's stable account ID, links an existing account with the same verified email,
+  or creates a new buyer account;
+- issues the normal CarvyPaar session.
 
-Admins: create the account with `python -m app.cli create-admin` (or `BOOTSTRAP_ADMIN_*` on Render), then sign
-up through Clerk with the same email. The two are linked on first sign-in.
+Google-only users have no password; they can set one under **Profile**.
 
 ## Security notes
 
 - **Tokens:** 15-minute access JWT (kept in memory only) plus a 7-day refresh JWT in an
   `httpOnly`, `SameSite=Lax` cookie scoped to `/api/auth`. Refresh tokens are stored by `jti`
   and **rotated** on every use. Replaying a rotated token revokes every session for that user.
-- **Passwords:** held by Clerk, never by CarvyPaar (along with brute-force protection, email
-  verification and resets). Only Clerk-verified emails can create or link an account.
-- **Validation:** all input passes through Pydantic. New accounts are always buyers; unknown fields
+- **Passwords:** bcrypt (cost 12). Login compares against a dummy hash for unknown emails to
+  equalise timing, and every failed login returns the same generic error, so accounts can't be enumerated.
+- **Validation:** all input passes through Pydantic. Admins can't self-register; unknown fields
   (such as `role`) are ignored on profile update.
 - **SQL injection:** only ORM queries with bound parameters; no raw SQL is built from user input.
 - **CORS:** explicit origin allow-list with credentials. Wildcard origins are refused in production.

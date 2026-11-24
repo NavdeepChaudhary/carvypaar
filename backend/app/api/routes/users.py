@@ -1,15 +1,17 @@
-"""/api/users: current profile, profile updates, public profiles."""
+"""/api/users: current profile, profile updates, password change, public profiles."""
 from __future__ import annotations
 
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Request, Response, status
 from sqlalchemy.orm import Session
 
 from app.api.deps import get_current_user
+from app.core.rate_limit import limiter
 from app.db.session import get_db
 from app.models import User, UserRole
 from app.schemas.listing import ListingCard
-from app.schemas.user import PublicUser, UserRead, UserUpdate
-from app.services import listing_service
+from app.schemas.user import PasswordChange, PublicUser, UserRead, UserUpdate
+from app.services import auth_service, listing_service
+from app.services.auth_service import AuthError
 
 router = APIRouter(prefix="/users", tags=["users"])
 
@@ -31,6 +33,22 @@ def update_me(
     db.commit()
     db.refresh(user)
     return user
+
+
+@router.post("/me/password", status_code=status.HTTP_204_NO_CONTENT)
+@limiter.limit("5/minute")
+def change_my_password(
+    request: Request,
+    payload: PasswordChange,
+    user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+) -> Response:
+    """Change password and revoke every refresh token (logs out other devices)."""
+    try:
+        auth_service.change_password(db, user, payload.current_password, payload.new_password)
+    except AuthError as exc:
+        raise HTTPException(status_code=exc.status_code, detail=exc.message) from None
+    return Response(status_code=status.HTTP_204_NO_CONTENT)
 
 
 @router.post("/me/become-seller", response_model=UserRead)

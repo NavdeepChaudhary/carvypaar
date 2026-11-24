@@ -95,3 +95,11 @@ class UserUpdate(BaseModel):
 
     _clean = field_validator("full_name", "bio", "location", mode="before")(clean_text)
     _phone = field_validator("phone")(validate_phone)
+
+
+class PasswordChange(BaseModel):
+    # Optional only for accounts without a password yet (Google sign-in users setting one).
+    current_password: str | None = Field(default=None, max_length=128)
+    new_password: str = Field(max_length=128)
+
+    _strength = field_validator("new_password")(validate_password_strength)

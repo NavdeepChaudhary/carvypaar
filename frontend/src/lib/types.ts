@@ -26,6 +26,14 @@ export interface AuthResponse {
   user: User;
 }
 
+export interface RegisterPayload {
+  email: string;
+  password: string;
+  full_name: string;
+  role: "buyer" | "seller";
+  phone?: string;
+}
+
 export interface ProfileUpdate {
   full_name?: string;
   phone?: string;

@@ -45,7 +45,6 @@ const config: Config = {
       },
       keyframes: {
         shimmer: { "100%": { transform: "translateX(100%)" } },
-        road: { "0%": { transform: "translateX(0)" }, "100%": { transform: "translateX(-96px)" } },
         "pulse-glow": {
           "0%, 100%": { boxShadow: "0 0 0 0 rgba(245,180,0,0.45)" },
           "50%": { boxShadow: "0 0 0 8px rgba(245,180,0,0)" },
@@ -53,7 +52,6 @@ const config: Config = {
       },
       animation: {
         shimmer: "shimmer 1.6s infinite",
-        road: "road 0.9s linear infinite",
         "pulse-glow": "pulse-glow 2s ease-in-out infinite",
       },
     },
