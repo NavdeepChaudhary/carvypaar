@@ -64,10 +64,10 @@ export function Navbar() {
     <div className="flex items-center gap-2">
       <Link
         href="/profile"
-        className="flex h-10 items-center gap-2 rounded-xl border border-line px-3 text-sm font-medium hover:border-accent"
+        className="flex h-10 items-center gap-2 whitespace-nowrap rounded-xl border border-line px-3 text-sm font-medium hover:border-accent"
       >
         <UserIcon className="h-4 w-4" aria-hidden />
-        <span className="max-w-[10rem] truncate">{user.full_name.split(" ")[0]}</span>
+        <span className="max-w-[7rem] truncate">{user.full_name.split(" ")[0]}</span>
       </Link>
       <button
         type="button"
@@ -79,7 +79,7 @@ export function Navbar() {
       </button>
     </div>
   ) : (
-    <Link href="/login" className="flex h-10 items-center gap-2 rounded-xl px-3 text-sm font-semibold hover:text-ink">
+    <Link href="/login" className="flex h-10 items-center gap-2 whitespace-nowrap rounded-xl px-3 text-sm font-semibold hover:text-ink">
       <UserIcon className="h-4 w-4" aria-hidden />
       Sign in / Register
     </Link>
@@ -88,7 +88,7 @@ export function Navbar() {
   const sellButton = (
     <Link
       href="/sell"
-      className="inline-flex h-10 items-center gap-1.5 rounded-lg bg-accent px-4 text-sm font-bold text-on-accent transition-shadow hover:shadow-glow"
+      className="inline-flex h-10 items-center gap-1.5 whitespace-nowrap rounded-lg bg-accent px-4 text-sm font-bold text-on-accent transition-shadow hover:shadow-glow"
     >
       <Plus className="h-4 w-4" aria-hidden />
       Sell your car
@@ -123,7 +123,7 @@ export function Navbar() {
         <nav className="container-page flex h-16 items-center justify-between gap-4 lg:h-[72px]" aria-label="Main">
           <Logo />
 
-          <ul className="hidden items-center gap-1 lg:flex">
+          <ul className="hidden items-center xl:flex">
             {links.map((link) => {
               const active = isActive(pathname, link.href);
               return (
@@ -132,12 +132,12 @@ export function Navbar() {
                     href={link.href}
                     aria-current={active ? "page" : undefined}
                     className={clsx(
-                      "relative px-3 py-2 text-sm font-semibold uppercase tracking-wide transition-colors hover:text-ink",
+                      "relative whitespace-nowrap px-2.5 py-2 text-sm font-semibold uppercase tracking-wide transition-colors hover:text-ink",
                       active ? "text-ink" : "text-fg/80",
                     )}
                   >
                     {link.label}
-                    {active && <span aria-hidden className="absolute inset-x-3 -bottom-0.5 h-0.5 rounded-full bg-accent" />}
+                    {active && <span aria-hidden className="absolute inset-x-2.5 -bottom-0.5 h-0.5 rounded-full bg-accent" />}
                   </Link>
                 </li>
               );
@@ -145,15 +145,15 @@ export function Navbar() {
           </ul>
 
           {/* One shared container so the bell (and its WebSocket) mounts exactly once. */}
-          <div className="flex items-center gap-2">
+          <div className="flex shrink-0 items-center gap-2">
             <ThemeToggle />
             <NotificationBell />
-            <div className="hidden lg:block">{authArea}</div>
+            <div className="hidden xl:block">{authArea}</div>
             <div className="hidden sm:block">{sellButton}</div>
             <button
               type="button"
               onClick={() => setOpen((o) => !o)}
-              className="grid h-10 w-10 place-items-center rounded-xl border border-line lg:hidden"
+              className="grid h-10 w-10 place-items-center rounded-xl border border-line xl:hidden"
               aria-label={open ? "Close menu" : "Open menu"}
               aria-expanded={open}
               aria-controls="mobile-menu"
@@ -170,7 +170,7 @@ export function Navbar() {
               initial={{ height: 0, opacity: 0 }}
               animate={{ height: "auto", opacity: 1 }}
               exit={{ height: 0, opacity: 0 }}
-              className="overflow-hidden border-t border-line bg-surface lg:hidden"
+              className="overflow-hidden border-t border-line bg-surface xl:hidden"
             >
               <div className="container-page flex flex-col gap-1 py-4">
                 {links.map((link) => (
