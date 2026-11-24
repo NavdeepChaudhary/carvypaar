@@ -58,6 +58,11 @@ class Settings(BaseSettings):
     # instance whose tokens we accept); the secret key reads users' verified emails.
     CLERK_PUBLISHABLE_KEY: str | None = None
     CLERK_SECRET_KEY: str | None = None
+    # Comma-separated emails that are made admins when they sign in (Clerk-verified emails only).
+    ADMIN_EMAILS: str = ""
+
+    # --- Marketplace commission shown on the admin dashboard (percent of each sale) ---
+    COMMISSION_PCT: float = 2.0
 
     # --- Brute-force protection (per email + IP; see app/core/lockout.py) ---
     LOGIN_LOCKOUT_ATTEMPTS: int = 5
@@ -120,6 +125,10 @@ class Settings(BaseSettings):
     @property
     def cors_origins_list(self) -> list[str]:
         return [o.strip() for o in self.CORS_ORIGINS.split(",") if o.strip()]
+
+    @property
+    def admin_emails(self) -> set[str]:
+        return {e.strip().lower() for e in self.ADMIN_EMAILS.split(",") if e.strip()}
 
     @property
     def is_production(self) -> bool:

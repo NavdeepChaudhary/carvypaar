@@ -67,6 +67,8 @@ class Listing(TimestampMixin, Base):
         index=True,
     )
     views_count: Mapped[int] = mapped_column(Integer, default=0, server_default="0")
+    # Why an admin rejected it (shown to the seller and on the admin dashboard); cleared on approval.
+    rejection_reason: Mapped[str | None] = mapped_column(String(500))
 
     seller: Mapped[User] = relationship(back_populates="listings")
     images: Mapped[list[ListingImage]] = relationship(

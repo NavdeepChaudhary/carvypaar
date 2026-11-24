@@ -34,6 +34,8 @@ services:
         sync: false              # Clerk dashboard -> API keys (same key as the website's)
       - key: CLERK_SECRET_KEY
         sync: false              # Clerk dashboard -> API keys
+      - key: ADMIN_EMAILS
+        sync: false              # comma-separated; these Clerk-verified emails become admins on sign-in
       # First admin account (free plan has no shell). Then sign up on the site with Clerk
       # using this same email: the accounts are linked and you're signed in as admin.
       - key: BOOTSTRAP_ADMIN_EMAIL

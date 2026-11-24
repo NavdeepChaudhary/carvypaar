@@ -13,6 +13,7 @@ from app.schemas.admin import (
     AdminAuctionRow,
     AdminListingRow,
     AdminListingStatus,
+    AdminSales,
     AdminStats,
     AdminUserRow,
     AdminUserUpdate,
@@ -87,6 +88,19 @@ def update_user(
 ) -> AdminUserRow:
     """Change role or (de)activate. Deactivating signs the user out everywhere."""
     return svc.update_user(db, admin, user_id, payload)
+
+
+@router.delete("/users/{user_id}", status_code=status.HTTP_204_NO_CONTENT)
+def delete_user(user_id: int, admin: User = Depends(require_admin), db: Session = Depends(get_db)) -> Response:
+    """Permanently delete an account and everything it owns. Not for yourself or other admins."""
+    svc.delete_user(db, admin, user_id)
+    return Response(status_code=status.HTTP_204_NO_CONTENT)
+
+
+@router.get("/sales", response_model=AdminSales)
+def sales(db: Session = Depends(get_db)) -> AdminSales:
+    """Sold cars with the marketplace commission (COMMISSION_PCT) on each."""
+    return svc.sales(db)
 
 
 # ---------------------------------------------------------------- auctions

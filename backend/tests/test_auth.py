@@ -141,3 +141,14 @@ def test_logout_revokes_refresh_token(client, register_user):
     res = client.post("/api/auth/logout", json={"refresh_token": tokens["refresh_token"]})
     assert res.status_code == 204
     assert client.post("/api/auth/refresh", json={"refresh_token": tokens["refresh_token"]}).status_code == 401
+
+
+def test_admin_emails_are_promoted_on_sign_in(client, register_user, monkeypatch):
+    from app.core.config import settings
+
+    monkeypatch.setattr(settings, "ADMIN_EMAILS", " Boss@Example.com , other@example.com")
+    assert client.post("/api/auth/clerk", json={"token": clerk_token("boss@example.com")}).json()["user"]["role"] == "admin"
+    assert client.post("/api/auth/clerk", json={"token": clerk_token("someone@example.com")}).json()["user"]["role"] == "buyer"
+    # An existing account is promoted the next time it signs in.
+    existing = register_user("other@example.com", role="seller")
+    assert existing["user"]["role"] == "admin"

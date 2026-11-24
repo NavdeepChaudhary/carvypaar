@@ -8,6 +8,7 @@ from decimal import Decimal
 from sqlalchemy import func, or_, select
 from sqlalchemy.orm import Session, selectinload
 
+from app.core.config import settings
 from app.core.security import utcnow
 from app.models import (
     Auction,
@@ -17,12 +18,16 @@ from app.models import (
     ListingStatus,
     ListingType,
     NotificationType,
+    Offer,
+    OfferStatus,
     User,
     UserRole,
 )
 from app.schemas.admin import (
     AdminAuctionRow,
     AdminListingRow,
+    AdminSaleRow,
+    AdminSales,
     AdminStats,
     AdminUserRow,
     AdminUserUpdate,
@@ -36,6 +41,7 @@ from app.services import auction_service, listing_service
 from app.services.auth_service import revoke_all_user_tokens
 from app.services.listing_service import ListingError, _like
 from app.services.notification_service import notify
+from app.services.storage import delete_quietly
 
 
 def _page(total: int, page: int, page_size: int) -> int:
@@ -152,7 +158,9 @@ def list_listings(db: Session, status: str, q: str | None, page: int, page_size:
     ))
     return Page[AdminListingRow](
         items=[AdminListingRow(listing=listing_service.to_card(l), seller_id=l.seller_id, seller_name=l.seller.full_name,
-                               seller_email=l.seller.email, updated_at=l.updated_at) for l in rows],
+                               seller_email=l.seller.email, seller_phone=l.seller.phone,
+                               rejection_reason=l.rejection_reason if l.status == ListingStatus.REJECTED else None,
+                               updated_at=l.updated_at) for l in rows],
         total=total, page=page, page_size=page_size, pages=_page(total, page, page_size),
     )
 
@@ -169,6 +177,7 @@ def approve(db: Session, listing_id: int) -> Listing:
     if listing.status not in (ListingStatus.PENDING, ListingStatus.REJECTED):
         raise ListingError(f"Only pending or rejected listings can be approved (this one is {listing.status.value})", 409)
     listing.status = ListingStatus.ACTIVE
+    listing.rejection_reason = None
     notify(db, listing.seller_id, NotificationType.LISTING_APPROVED, title=f"Your {listing.year} {listing.make} {listing.model} is live!",
            body="Your listing passed review and buyers can now see it.", link=f"/cars/{listing.id}", data={"listing_id": listing.id})
     db.commit()
@@ -183,6 +192,7 @@ def reject(db: Session, listing_id: int, reason: str) -> Listing:
             and listing.auction.bid_count > 0:
         raise ListingError("This listing has a live auction with bids. Cancel the auction first.", 409)
     listing.status = ListingStatus.REJECTED
+    listing.rejection_reason = reason[:500]
     notify(db, listing.seller_id, NotificationType.LISTING_REJECTED, title=f"Your {listing.make} {listing.model} listing needs changes",
            body=f"Reason: {reason}. Edit the listing to resubmit it for review.", link=f"/cars/{listing.id}/edit",
            data={"listing_id": listing.id, "reason": reason})
@@ -207,7 +217,7 @@ def list_users(db: Session, q: str | None, role: UserRole | None, active: bool |
     bid_counts = dict(db.execute(select(Bid.bidder_id, func.count()).where(Bid.bidder_id.in_(ids)).group_by(Bid.bidder_id)).all()) if ids else {}
     return Page[AdminUserRow](
         items=[AdminUserRow(user=UserRead.model_validate(u), listings=listing_counts.get(u.id, 0), bids=bid_counts.get(u.id, 0),
-                            last_login_at=u.last_login_at) for u in users],
+                            last_login_at=u.last_login_at, updated_at=u.updated_at) for u in users],
         total=total, page=page, page_size=page_size, pages=_page(total, page, page_size),
     )
 
@@ -235,7 +245,71 @@ def update_user(db: Session, admin: User, user_id: int, data: AdminUserUpdate) -
     db.refresh(user)
     listings = db.scalar(select(func.count()).select_from(Listing).where(Listing.seller_id == user.id)) or 0
     bids = db.scalar(select(func.count()).select_from(Bid).where(Bid.bidder_id == user.id)) or 0
-    return AdminUserRow(user=UserRead.model_validate(user), listings=listings, bids=bids, last_login_at=user.last_login_at)
+    return AdminUserRow(user=UserRead.model_validate(user), listings=listings, bids=bids, last_login_at=user.last_login_at,
+                        updated_at=user.updated_at)
+
+
+def delete_user(db: Session, admin: User, user_id: int) -> None:
+    """Delete an account and everything it owns (listings, photos, bids, offers, messages)."""
+    user = db.get(User, user_id)
+    if user is None:
+        raise ListingError("User not found", 404)
+    if user.id == admin.id:
+        raise ListingError("You can't delete your own account here", 409)
+    if user.role == UserRole.ADMIN:
+        raise ListingError("Demote this admin before deleting the account", 409)
+    keys = [img.storage_key for listing in user.listings for img in listing.images]
+    db.delete(user)
+    db.commit()
+    for key in keys:  # remove files only after the DB commit succeeds
+        delete_quietly(key)
+
+
+# ---------------------------------------------------------------- sales and commission
+def _money(x: Decimal) -> Decimal:
+    return x.quantize(Decimal("0.01"))
+
+
+def sales(db: Session, limit: int = 100) -> AdminSales:
+    """Sold cars, newest first, with the marketplace commission on each.
+
+    Price and buyer: the winning bid for auctions, else the accepted offer, else the
+    asking price (the seller marked it sold without a recorded buyer)."""
+    pct = Decimal(str(settings.COMMISSION_PCT))
+    sold = list(db.scalars(
+        select(Listing).where(Listing.status == ListingStatus.SOLD)
+        .options(selectinload(Listing.images), selectinload(Listing.seller),
+                 selectinload(Listing.auction).selectinload(Auction.winner))
+        .order_by(Listing.updated_at.desc(), Listing.id.desc())
+    ))
+    ids = [l.id for l in sold]
+    accepted: dict[int, Offer] = {}
+    if ids:
+        for offer in db.scalars(select(Offer).where(Offer.listing_id.in_(ids), Offer.status == OfferStatus.ACCEPTED)
+                                .options(selectinload(Offer.buyer)).order_by(Offer.updated_at)):
+            accepted[offer.listing_id] = offer  # latest accepted offer wins
+    rows: list[AdminSaleRow] = []
+    gross = Decimal(0)
+    for l in sold:
+        auction = l.auction
+        buyer: User | None
+        if auction is not None and auction.winner_id is not None and auction.final_price is not None:
+            via, price, buyer, when = "auction", Decimal(auction.final_price), auction.winner, auction.end_time
+        elif l.id in accepted:
+            offer = accepted[l.id]
+            via, price, buyer, when = "offer", Decimal(offer.amount), offer.buyer, offer.updated_at
+        else:
+            via, price, buyer, when = "direct", Decimal(l.price), None, l.updated_at
+        commission = _money(price * pct / 100)
+        gross += price
+        rows.append(AdminSaleRow(
+            listing_id=l.id, title=l.title, cover_image=l.images[0].url if l.images else None, sold_via=via,
+            sold_price=_money(price), commission=commission, seller_amount=_money(price - commission),
+            seller_name=l.seller.full_name, buyer_id=buyer.id if buyer else None,
+            buyer_name=buyer.full_name if buyer else None, buyer_email=buyer.email if buyer else None, sold_at=when,
+        ))
+    return AdminSales(commission_pct=float(pct), cars_sold=len(rows), gross=_money(gross),
+                      commission=_money(sum((r.commission for r in rows), Decimal(0))), items=rows[:limit])
 
 
 # ---------------------------------------------------------------- auctions

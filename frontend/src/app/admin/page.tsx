@@ -2,21 +2,22 @@
 
 import { clsx } from "clsx";
 import { motion } from "framer-motion";
-import { ClipboardCheck, Gavel, LayoutDashboard, Users } from "lucide-react";
+import { BarChart3, Gavel, LayoutDashboard, Users } from "lucide-react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { Suspense, useState } from "react";
+import Link from "next/link";
+import { Suspense } from "react";
 
 import { AuctionsTable } from "@/components/admin/AuctionsTable";
-import { ListingsQueue } from "@/components/admin/ListingsQueue";
+import { AdminDashboard } from "@/components/admin/AdminDashboard";
 import { Overview } from "@/components/admin/Overview";
 import { UsersTable } from "@/components/admin/UsersTable";
 import { Skeleton } from "@/components/ui/Skeleton";
 import { useRequireAuth } from "@/hooks/useRequireAuth";
 
 const TABS = [
-  { id: "overview", label: "Overview", icon: LayoutDashboard },
-  { id: "listings", label: "Listings", icon: ClipboardCheck },
-  { id: "users", label: "Users", icon: Users },
+  { id: "dashboard", label: "Dashboard", icon: LayoutDashboard },
+  { id: "insights", label: "Insights", icon: BarChart3 },
+  { id: "users", label: "Manage users", icon: Users },
   { id: "auctions", label: "Auctions", icon: Gavel },
 ] as const;
 type TabId = (typeof TABS)[number]["id"];
@@ -28,8 +29,7 @@ function Admin() {
   const router = useRouter();
   const pathname = usePathname();
   const requested = params.get("tab");
-  const tab: TabId = TABS.some((t) => t.id === requested) ? (requested as TabId) : "overview";
-  const [overviewKey, setOverviewKey] = useState(0);
+  const tab: TabId = TABS.some((t) => t.id === requested) ? (requested as TabId) : "dashboard";
   const go = (id: TabId) => router.replace(`${pathname}?tab=${id}`, { scroll: false });
 
   if (!ready) {
@@ -43,8 +43,13 @@ function Admin() {
 
   return (
     <div className="container-page pb-20 pt-10">
-      <p className="text-xs font-semibold uppercase tracking-[0.3em] text-ink">Admin</p>
-      <h1 className="mt-2 font-display text-3xl font-extrabold uppercase sm:text-4xl">Control room</h1>
+      <div className="flex flex-wrap items-end justify-between gap-3 border-b-2 border-accent/60 pb-4">
+        <div>
+          <p className="text-xs font-semibold uppercase tracking-[0.3em] text-ink">Admin</p>
+          <h1 className="mt-2 font-display text-3xl font-extrabold sm:text-4xl">Admin Dashboard</h1>
+        </div>
+        <Link href="/" className="text-sm font-semibold text-ink hover:underline">← Back to home</Link>
+      </div>
 
       <div className="mt-8 flex gap-1 overflow-x-auto border-b border-line" role="tablist" aria-label="Admin sections">
         {TABS.map(({ id, label, icon: Icon }) => (
@@ -59,8 +64,8 @@ function Admin() {
       </div>
 
       <div className="mt-8" role="tabpanel" id={`admin-panel-${tab}`} aria-labelledby={`admin-tab-${tab}`}>
-        {tab === "overview" && <Overview key={overviewKey} onReview={() => go("listings")} />}
-        {tab === "listings" && <ListingsQueue onChanged={() => setOverviewKey((k) => k + 1)} />}
+        {tab === "dashboard" && <AdminDashboard />}
+        {tab === "insights" && <Overview onReview={() => go("dashboard")} />}
         {tab === "users" && <UsersTable />}
         {tab === "auctions" && <AuctionsTable />}
       </div>

@@ -56,6 +56,8 @@ class AdminListingRow(BaseModel):
     seller_id: int
     seller_name: str
     seller_email: str
+    seller_phone: str | None
+    rejection_reason: str | None
     updated_at: UtcDatetime
 
 
@@ -73,6 +75,30 @@ class AdminUserRow(BaseModel):
     listings: int
     bids: int
     last_login_at: UtcDatetime | None
+    updated_at: UtcDatetime
+
+
+class AdminSaleRow(BaseModel):
+    listing_id: int
+    title: str
+    cover_image: str | None
+    sold_via: Literal["auction", "offer", "direct"]
+    sold_price: Money
+    commission: Money
+    seller_amount: Money
+    seller_name: str
+    buyer_id: int | None  # None: marked sold by the seller without a recorded buyer
+    buyer_name: str | None
+    buyer_email: str | None
+    sold_at: UtcDatetime
+
+
+class AdminSales(BaseModel):
+    commission_pct: float
+    cars_sold: int
+    gross: Money
+    commission: Money
+    items: list[AdminSaleRow]
 
 
 class AdminUserUpdate(BaseModel):

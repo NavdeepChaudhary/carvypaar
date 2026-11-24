@@ -3,6 +3,7 @@ import { toQueryString } from "./listings";
 import type {
   AdminAuctionRow,
   AdminListingRow,
+  AdminSales,
   AdminStats,
   AdminUserRow,
   AuctionState,
@@ -29,6 +30,8 @@ export const adminApi = {
     apiFetch<AdminUserRow>(`/api/admin/users/${id}`, { method: "PATCH", body: data }),
   auctions: (status: AdminAuctionStatus, page: number) =>
     apiFetch<Page<AdminAuctionRow>>(`/api/admin/auctions${toQueryString({ status, page })}`),
+  deleteUser: (id: number) => apiFetch<void>(`/api/admin/users/${id}`, { method: "DELETE" }),
+  sales: () => apiFetch<AdminSales>("/api/admin/sales"),
   cancelAuction: (id: number) => apiFetch<AuctionState>(`/api/admin/auctions/${id}/cancel`, { method: "POST" }),
 };
 

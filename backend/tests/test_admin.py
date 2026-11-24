@@ -155,3 +155,61 @@ def test_stats(client, register_user, admin, db_session):
     pub = client.get("/api/stats").json()
     assert pub == {"active_listings": 2, "live_auctions": 1, "auctions_closed": 0, "members": 3}
     assert (utcnow() - timedelta(days=1)).date().isoformat() == s["daily"][-2]["date"]
+
+
+def test_dashboard_rows_show_contact_and_rejection_reason(client, register_user, admin):
+    seller = register_user("seller@example.com", role="seller", phone="+91 98765 43210")
+    car = create_car(client, seller["access_token"])
+    client.post(f"/api/admin/listings/{car['id']}/reject", json={"reason": "Photos are blurry"}, headers=h(admin))
+    row = client.get("/api/admin/listings", params={"status": "rejected"}, headers=h(admin)).json()["items"][0]
+    assert row["seller_phone"] == "+91 98765 43210" and row["rejection_reason"] == "Photos are blurry"
+    # Approving clears the reason.
+    client.post(f"/api/admin/listings/{car['id']}/approve", headers=h(admin))
+    row = client.get("/api/admin/listings", params={"status": "active"}, headers=h(admin)).json()["items"][0]
+    assert row["rejection_reason"] is None
+    users = client.get("/api/admin/users", headers=h(admin)).json()["items"]
+    assert all(u["updated_at"] for u in users)
+
+
+def test_sales_and_commission(client, register_user, admin, monkeypatch):
+    seller = register_user("seller@example.com", role="seller")
+    buyer = register_user("buyer@example.com")
+    s, b = h(seller), h(buyer)
+    direct = create_car(client, seller["access_token"], price=500000)
+    client.patch(f"/api/listings/{direct['id']}", json={"status": "sold"}, headers=s)
+    via_offer = create_car(client, seller["access_token"], price=900000)
+    offer = client.post(f"/api/listings/{via_offer['id']}/offers", json={"amount": 800000}, headers=b).json()
+    client.patch(f"/api/offers/{offer['id']}", json={"status": "accepted"}, headers=s)
+    client.patch(f"/api/listings/{via_offer['id']}", json={"status": "sold"}, headers=s)
+    create_car(client, seller["access_token"])  # unsold: not counted
+
+    data = client.get("/api/admin/sales", headers=h(admin)).json()
+    assert data["commission_pct"] == 2.0 and data["cars_sold"] == 2
+    by_id = {r["listing_id"]: r for r in data["items"]}
+    assert by_id[direct["id"]]["sold_via"] == "direct" and by_id[direct["id"]]["buyer_id"] is None
+    assert by_id[direct["id"]]["commission"] == 10000.0 and by_id[direct["id"]]["seller_amount"] == 490000.0
+    sale = by_id[via_offer["id"]]
+    assert sale["sold_via"] == "offer" and sale["sold_price"] == 800000.0 and sale["buyer_email"] == "buyer@example.com"
+    assert sale["commission"] == 16000.0
+    assert data["gross"] == 1300000.0 and data["commission"] == 26000.0
+
+    monkeypatch.setattr(settings, "COMMISSION_PCT", 5.0)
+    assert client.get("/api/admin/sales", headers=h(admin)).json()["commission"] == 65000.0
+    assert client.get("/api/admin/sales", headers=s).status_code == 403
+
+
+def test_delete_user(client, register_user, admin, db_session):
+    seller = register_user("gone@example.com", role="seller")
+    car = create_car(client, seller["access_token"])
+    uid = seller["user"]["id"]
+    assert client.delete(f"/api/admin/users/{uid}", headers=h(seller)).status_code == 403
+    assert client.delete(f"/api/admin/users/{admin['user']['id']}", headers=h(admin)).status_code == 409  # not yourself
+    assert client.delete(f"/api/admin/users/{uid}", headers=h(admin)).status_code == 204
+    assert client.delete(f"/api/admin/users/{uid}", headers=h(admin)).status_code == 404
+    assert client.get(f"/api/listings/{car['id']}").status_code == 404  # their listings went with them
+    assert client.get("/api/users/me", headers=h(seller)).status_code == 401
+
+    other_admin = register_user("second-admin@example.com")
+    db_session.get(User, other_admin["user"]["id"]).role = UserRole.ADMIN
+    db_session.commit()
+    assert client.delete(f"/api/admin/users/{other_admin['user']['id']}", headers=h(admin)).status_code == 409

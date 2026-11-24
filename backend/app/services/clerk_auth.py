@@ -166,6 +166,9 @@ def sign_in_with_clerk(db: Session, token: str) -> User:
     if not user.is_active:
         db.rollback()
         raise AuthError("This account has been deactivated", status_code=403)
+    if user.email in settings.admin_emails and user.role != UserRole.ADMIN:
+        logger.info("Promoting %s to admin (ADMIN_EMAILS)", user.id)
+        user.role = UserRole.ADMIN
     user.last_login_at = utcnow()
     try:
         db.commit()

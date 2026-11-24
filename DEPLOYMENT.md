@@ -89,6 +89,8 @@ The backend refuses to start in production with unsafe settings: a weak `SECRET_
 | `SECRET_KEY` | dev placeholder | 32+ random chars. Rotating it signs everyone out |
 | `DATABASE_URL` | SQLite file | Set by compose in prod (`postgresql+psycopg://…`) |
 | `REDIS_URL` | unset | Enables cross-worker WebSockets, rate limits and lockouts |
+| `ADMIN_EMAILS` | unset | Comma-separated emails promoted to admin when they sign in through Clerk |
+| `COMMISSION_PCT` | 2 | Marketplace commission (%) shown on the admin dashboard |
 | `CLERK_PUBLISHABLE_KEY` / `CLERK_SECRET_KEY` | unset | Clerk API keys; required for sign-in. The website needs the publishable key too, as `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY` (build-time) |
 | `CORS_ORIGINS` | localhost:3000 | Comma-separated, `https://` only in production |
 | `COOKIE_SECURE` | false | **true** in production (compose sets it) |

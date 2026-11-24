@@ -337,6 +337,8 @@ export interface AdminListingRow {
   seller_id: number;
   seller_name: string;
   seller_email: string;
+  seller_phone: string | null;
+  rejection_reason: string | null;
   updated_at: string;
 }
 
@@ -345,6 +347,30 @@ export interface AdminUserRow {
   listings: number;
   bids: number;
   last_login_at: string | null;
+  updated_at: string;
+}
+
+export interface AdminSaleRow {
+  listing_id: number;
+  title: string;
+  cover_image: string | null;
+  sold_via: "auction" | "offer" | "direct";
+  sold_price: number;
+  commission: number;
+  seller_amount: number;
+  seller_name: string;
+  buyer_id: number | null;
+  buyer_name: string | null;
+  buyer_email: string | null;
+  sold_at: string;
+}
+
+export interface AdminSales {
+  commission_pct: number;
+  cars_sold: number;
+  gross: number;
+  commission: number;
+  items: AdminSaleRow[];
 }
 
 export interface AdminAuctionRow {
