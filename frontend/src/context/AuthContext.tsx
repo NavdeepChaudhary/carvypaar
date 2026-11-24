@@ -1,37 +1,93 @@
 "use client";
 
-import { createContext, useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from "react";
+import { useAuth as useClerkAuth } from "@clerk/nextjs";
+import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState, type ReactNode } from "react";
+import { toast } from "sonner";
 
-import { apiFetch, onSessionChange, refreshSession, setAccessToken } from "@/lib/api";
-import type { AuthResponse, ProfileUpdate, RegisterPayload, User } from "@/lib/types";
+import { ApiError, apiFetch, onSessionChange, refreshSession, setAccessToken } from "@/lib/api";
+import { CLERK_ENABLED } from "@/lib/clerk";
+import type { AuthResponse, ProfileUpdate, User } from "@/lib/types";
 
+/**
+ * Sign-in is done by Clerk. Once Clerk says someone is signed in, we trade their Clerk
+ * session token for a CarvyPaar session (POST /api/auth/clerk), which the rest of the app
+ * uses exactly as before: access token in memory, refresh token in an httpOnly cookie.
+ */
 interface AuthContextValue {
   user: User | null;
-  /** True until the initial silent refresh finishes. */
+  /** True until we know whether someone is signed in. */
   loading: boolean;
-  login: (email: string, password: string) => Promise<User>;
-  /** Exchange a Google Identity Services credential (ID token) for a session. */
-  loginWithGoogle: (credential: string) => Promise<User>;
-  register: (payload: RegisterPayload) => Promise<User>;
   logout: () => Promise<void>;
   updateProfile: (data: ProfileUpdate) => Promise<User>;
-  changePassword: (current: string, next: string) => Promise<void>;
   becomeSeller: () => Promise<User>;
 }
 
 const AuthContext = createContext<AuthContextValue | null>(null);
+
+type ApplySession = (session: AuthResponse | null) => void;
+
+/** Keeps the CarvyPaar session in step with Clerk's. Rendered only when Clerk is configured. */
+function ClerkSessionSync({
+  applySession,
+  hasSession,
+  onSettled,
+  signOutRef,
+}: {
+  applySession: ApplySession;
+  hasSession: () => boolean;
+  onSettled: () => void;
+  signOutRef: { current: (() => Promise<void>) | null };
+}) {
+  const { isLoaded, isSignedIn, userId, getToken, signOut } = useClerkAuth();
+  signOutRef.current = () => signOut();
+
+  useEffect(() => {
+    if (!isLoaded) return;
+    let cancelled = false;
+    (async () => {
+      if (isSignedIn) {
+        try {
+          const token = await getToken();
+          if (!token) throw new ApiError("Couldn't read your sign-in session", 401);
+          const session = await apiFetch<AuthResponse>("/api/auth/clerk", { method: "POST", body: { token }, auth: false });
+          if (!cancelled) applySession(session);
+        } catch (err) {
+          if (cancelled) return;
+          applySession(null);
+          toast.error(err instanceof ApiError ? err.message : "Couldn't sign you in. Please try again.");
+        }
+      } else if (hasSession()) {
+        // Signed out of Clerk (here or in another tab): end the CarvyPaar session too.
+        await apiFetch<void>("/api/auth/logout", { method: "POST", auth: false }).catch(() => undefined);
+        if (!cancelled) applySession(null);
+      }
+      if (!cancelled) onSettled();
+    })();
+    return () => {
+      cancelled = true;
+    };
+    // userId: re-sync when a different person signs in.
+  }, [isLoaded, isSignedIn, userId, getToken, applySession, hasSession, onSettled]);
+
+  return null;
+}
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
   // Absolute expiry time (ms). A new value on every session, so the timer below re-arms.
   const [expiresAt, setExpiresAt] = useState<number | null>(null);
+  const userRef = useRef<User | null>(null);
+  const clerkSignOut = useRef<(() => Promise<void>) | null>(null);
 
-  const applySession = useCallback((session: AuthResponse | null) => {
+  const applySession = useCallback<ApplySession>((session) => {
     setAccessToken(session?.access_token ?? null);
+    userRef.current = session?.user ?? null;
     setUser(session?.user ?? null);
     setExpiresAt(session ? Date.now() + session.expires_in * 1000 : null);
   }, []);
+  const hasSession = useCallback(() => userRef.current !== null, []);
+  const settle = useCallback(() => setLoading(false), []);
 
   // Refresh a minute before the access token expires, so public pages (which
   // don't retry on 401) keep seeing the user as signed in.
@@ -42,91 +98,51 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     return () => window.clearTimeout(timer);
   }, [expiresAt]);
 
-  // Restore the session from the httpOnly refresh cookie on first load.
+  useEffect(() => onSessionChange(applySession), [applySession]);
+
+  // Without Clerk (GitHub Pages preview) nobody can sign in: we're done loading at once.
   useEffect(() => {
-    const unsubscribe = onSessionChange(applySession);
-    refreshSession().finally(() => setLoading(false));
-    return unsubscribe;
-  }, [applySession]);
-
-  const login = useCallback(
-    async (email: string, password: string) => {
-      const session = await apiFetch<AuthResponse>("/api/auth/login", {
-        method: "POST",
-        body: { email, password },
-        auth: false,
-      });
-      applySession(session);
-      return session.user;
-    },
-    [applySession],
-  );
-
-  const loginWithGoogle = useCallback(
-    async (credential: string) => {
-      const session = await apiFetch<AuthResponse>("/api/auth/google", {
-        method: "POST",
-        body: { credential },
-        auth: false,
-      });
-      applySession(session);
-      return session.user;
-    },
-    [applySession],
-  );
-
-  const register = useCallback(
-    async (payload: RegisterPayload) => {
-      const session = await apiFetch<AuthResponse>("/api/auth/register", {
-        method: "POST",
-        body: payload,
-        auth: false,
-      });
-      applySession(session);
-      return session.user;
-    },
-    [applySession],
-  );
+    if (!CLERK_ENABLED) setLoading(false);
+  }, []);
 
   const logout = useCallback(async () => {
     try {
       await apiFetch<void>("/api/auth/logout", { method: "POST", auth: false });
+    } catch {
+      // Signing out locally matters more than telling the server.
     } finally {
       applySession(null);
     }
+    await clerkSignOut.current?.();
   }, [applySession]);
 
   const updateProfile = useCallback(async (data: ProfileUpdate) => {
     const updated = await apiFetch<User>("/api/users/me", { method: "PATCH", body: data });
+    userRef.current = updated;
     setUser(updated);
     return updated;
   }, []);
 
-  const changePassword = useCallback(
-    async (current: string, next: string) => {
-      await apiFetch<void>("/api/users/me/password", {
-        method: "POST",
-        // Google-only accounts set a first password without a current one.
-        body: { current_password: current || undefined, new_password: next },
-      });
-      // The API revokes all sessions on password change; sign in again with the new password.
-      if (user) await login(user.email, next);
-    },
-    [login, user],
-  );
-
   const becomeSeller = useCallback(async () => {
     const updated = await apiFetch<User>("/api/users/me/become-seller", { method: "POST" });
+    userRef.current = updated;
     setUser(updated);
     return updated;
   }, []);
 
   const value = useMemo(
-    () => ({ user, loading, login, loginWithGoogle, register, logout, updateProfile, changePassword, becomeSeller }),
-    [user, loading, login, loginWithGoogle, register, logout, updateProfile, changePassword, becomeSeller],
+    () => ({ user, loading, logout, updateProfile, becomeSeller }),
+    [user, loading, logout, updateProfile, becomeSeller],
   );
 
-  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
+  return (
+    <AuthContext.Provider value={value}>
+      {CLERK_ENABLED && (
+        <ClerkSessionSync applySession={applySession} hasSession={hasSession} onSettled={settle} signOutRef={clerkSignOut} />
+      )}
+      {children}
+    </AuthContext.Provider>
+  );
 }
 
 export function useAuth(): AuthContextValue {

@@ -11,7 +11,7 @@ import { formatKm, formatPrice, formatPriceShort, timeAgo } from "./format";
 import { toQueryString } from "./listings";
 import { safeNext } from "./navigation";
 import type { AuctionState, Bid } from "./types";
-import { EMAIL_RE, passwordError, passwordScore, phoneError } from "./validation";
+import { EMAIL_RE, phoneError } from "./validation";
 
 describe("safeNext (open-redirect protection)", () => {
   it("allows same-origin paths", () => {
@@ -49,13 +49,6 @@ describe("formatting", () => {
 });
 
 describe("validation", () => {
-  it("mirrors the server password rules", () => {
-    expect(passwordError("short1")).toMatch(/8 characters/);
-    expect(passwordError("onlyletters")).toMatch(/letter and one number/);
-    expect(passwordError("a1".repeat(40))).toMatch(/72 bytes/);
-    expect(passwordError("Racing2026")).toBeNull();
-    expect(passwordScore("Racing2026!xY")).toBe(4);
-  });
   it("validates emails and phones", () => {
     expect(EMAIL_RE.test("a@b.co")).toBe(true);
     expect(EMAIL_RE.test("a@b")).toBe(false);

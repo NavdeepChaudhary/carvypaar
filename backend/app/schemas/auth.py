@@ -9,6 +9,8 @@ from app.schemas.user import UserRead, validate_password_strength, validate_phon
 
 
 class RegisterRequest(BaseModel):
+    """Used by `python -m app.cli create-admin`; people sign up through Clerk."""
+
     email: EmailStr
     password: str = Field(max_length=128)
     full_name: str = Field(min_length=2, max_length=120)
@@ -33,24 +35,10 @@ class RegisterRequest(BaseModel):
         return v
 
 
-class LoginRequest(BaseModel):
-    email: EmailStr
-    password: str = Field(min_length=1, max_length=128)
+class ClerkAuthRequest(BaseModel):
+    """The session token Clerk's frontend SDK gives the browser (`getToken()`)."""
 
-    @field_validator("email")
-    @classmethod
-    def _normalise_email(cls, v: str) -> str:
-        return v.strip().lower()
-
-
-class GoogleAuthRequest(BaseModel):
-    """The ID token ("credential") Google Identity Services gives the browser."""
-
-    credential: str = Field(min_length=20, max_length=4096)
-
-
-class AuthProviders(BaseModel):
-    google_client_id: str | None  # public value; null = Google sign-in disabled
+    token: str = Field(min_length=20, max_length=8192)
 
 
 class RefreshRequest(BaseModel):

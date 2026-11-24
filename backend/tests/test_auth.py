@@ -1,11 +1,11 @@
-"""Auth flow tests: registration, login, token refresh/rotation, logout."""
+"""Auth flow tests: Clerk sign-in exchange, token refresh/rotation, logout."""
 from datetime import timedelta
 
 from sqlalchemy import select
 
 from app.core.security import create_access_token, utcnow
 from app.models import RefreshToken
-from tests.conftest import DEFAULT_PASSWORD, auth_header
+from tests.conftest import auth_header, clerk_token
 
 
 def test_health(client):
@@ -20,70 +20,62 @@ def test_security_headers_present(client):
     assert res.headers["X-Frame-Options"] == "DENY"
 
 
-def test_register_returns_tokens_and_sets_cookie(client):
-    res = client.post(
-        "/api/auth/register",
-        json={"email": "New@Example.com", "password": DEFAULT_PASSWORD, "full_name": "New Driver", "role": "seller"},
-    )
-    assert res.status_code == 201, res.text
+def test_clerk_sign_in_creates_account_and_sets_cookie(client, db_session):
+    res = client.post("/api/auth/clerk", json={"token": clerk_token("new@example.com")})
+    assert res.status_code == 200, res.text
     body = res.json()
     assert body["token_type"] == "bearer"
     assert body["access_token"] and body["refresh_token"]
-    assert body["user"]["email"] == "new@example.com"  # normalised
-    assert body["user"]["role"] == "seller"
-    assert "hashed_password" not in body["user"]
+    user = body["user"]
+    assert user["email"] == "new@example.com" and user["role"] == "buyer" and user["is_verified"] is True
+    assert "hashed_password" not in user
     set_cookie = res.headers["set-cookie"]
     assert "cv_refresh=" in set_cookie and "HttpOnly" in set_cookie and "Path=/api/auth" in set_cookie
+    from app.models import User
+
+    assert db_session.get(User, user["id"]).clerk_user_id == "user_new@example.com"
+    # Signing in again finds the same account.
+    again = client.post("/api/auth/clerk", json={"token": clerk_token("new@example.com")})
+    assert again.json()["user"]["id"] == user["id"]
 
 
-def test_register_duplicate_email_conflicts(client, register_user):
-    register_user("dup@example.com")
-    res = client.post(
-        "/api/auth/register",
-        json={"email": "DUP@example.com", "password": DEFAULT_PASSWORD, "full_name": "Again"},
-    )
-    assert res.status_code == 409
+def test_clerk_sign_in_links_existing_account_by_email(client, register_user, db_session):
+    seller = register_user("seller@example.com", role="seller")  # existing account, now linked
+    assert seller["user"]["role"] == "seller"
+    from app.models import User
+
+    assert db_session.get(User, seller["user"]["id"]).clerk_user_id == "user_seller@example.com"
 
 
-def test_cannot_self_register_as_admin(client):
-    res = client.post(
-        "/api/auth/register",
-        json={"email": "evil@example.com", "password": DEFAULT_PASSWORD, "full_name": "Evil", "role": "admin"},
-    )
-    assert res.status_code == 422
+def test_clerk_sign_in_rejects_bad_token_and_other_linked_account(client, register_user, db_session, monkeypatch):
+    assert client.post("/api/auth/clerk", json={"token": "not-a-clerk-token-at-all"}).status_code == 401
+    assert client.post("/api/auth/clerk", json={"token": "short"}).status_code == 422
+    data = register_user("taken@example.com")
+    from app.models import User
+
+    db_session.get(User, data["user"]["id"]).clerk_user_id = "user_someone-else"
+    db_session.commit()
+    from app.services import clerk_auth
+
+    other = clerk_auth.ClerkIdentity(user_id="user_x", email="taken@example.com", name="X", picture=None)
+    monkeypatch.setattr(clerk_auth, "get_identity", lambda _id: other)
+    assert client.post("/api/auth/clerk", json={"token": clerk_token("x")}).status_code == 409
 
 
-def test_weak_password_rejected(client):
-    for bad in ["short1", "allletters", "12345678", "a1" * 40]:
-        res = client.post(
-            "/api/auth/register", json={"email": "weak@example.com", "password": bad, "full_name": "Weak"}
-        )
-        assert res.status_code == 422, bad
-
-
-def test_login_success_and_failure(client, register_user):
-    register_user("login@example.com")
-    ok = client.post("/api/auth/login", json={"email": "login@example.com", "password": DEFAULT_PASSWORD})
-    assert ok.status_code == 200
-    assert ok.json()["user"]["email"] == "login@example.com"
-
-    wrong = client.post("/api/auth/login", json={"email": "login@example.com", "password": "Wrong1234"})
-    assert wrong.status_code == 401
-    missing = client.post("/api/auth/login", json={"email": "nobody@example.com", "password": "Wrong1234"})
-    assert missing.status_code == 401
-    # Same message for both, so emails can't be enumerated.
-    assert wrong.json()["detail"] == missing.json()["detail"]
-
-
-def test_inactive_user_cannot_login(client, register_user, db_session):
+def test_inactive_user_cannot_sign_in(client, register_user, db_session):
     data = register_user("inactive@example.com")
     from app.models import User
 
     user = db_session.get(User, data["user"]["id"])
     user.is_active = False
     db_session.commit()
-    res = client.post("/api/auth/login", json={"email": "inactive@example.com", "password": DEFAULT_PASSWORD})
+    res = client.post("/api/auth/clerk", json={"token": clerk_token("inactive@example.com")})
     assert res.status_code == 403
+
+
+def test_old_password_endpoints_are_gone(client):
+    for path in ("/api/auth/login", "/api/auth/register", "/api/auth/google"):
+        assert client.post(path, json={}).status_code in (404, 405)
 
 
 def test_protected_route_requires_valid_token(client, register_user):

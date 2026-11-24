@@ -64,15 +64,45 @@ def client(session_factory) -> Generator[TestClient, None, None]:
         yield c
 
 
+CLERK_TEST_PREFIX = "test-clerk-session:"
+
+
+def clerk_token(email: str) -> str:
+    """A stand-in Clerk session token: the fake below maps it straight to a Clerk user."""
+    return f"{CLERK_TEST_PREFIX}{email}"
+
+
+@pytest.fixture(autouse=True)
+def fake_clerk(monkeypatch):
+    """Replace the two network calls to Clerk (token verification, user lookup). The real
+    token checks are covered with signed JWTs in test_clerk_auth.py."""
+    from app.services import clerk_auth
+
+    def verify(token: str) -> str:
+        if not token.startswith(CLERK_TEST_PREFIX):
+            raise clerk_auth.AuthError("Sign-in failed: invalid or expired session")
+        return "user_" + token[len(CLERK_TEST_PREFIX):]
+
+    def identity(user_id: str) -> clerk_auth.ClerkIdentity:
+        email = user_id.removeprefix("user_")
+        return clerk_auth.ClerkIdentity(user_id=user_id, email=email, name="Test Driver", picture=None)
+
+    monkeypatch.setattr(clerk_auth, "verify_session_token", verify)
+    monkeypatch.setattr(clerk_auth, "get_identity", identity)
+
+
 @pytest.fixture()
-def register_user(client: TestClient) -> Callable[..., dict[str, Any]]:
-    """Factory: register a user and return the token response JSON."""
+def register_user(client: TestClient, session_factory) -> Callable[..., dict[str, Any]]:
+    """Factory: create a user, sign them in through Clerk and return the token response JSON."""
+    from app.models import UserRole
+    from app.services import auth_service
 
     def _register(email: str = "driver@example.com", role: str = "buyer", **extra: Any) -> dict[str, Any]:
-        payload = {"email": email, "password": DEFAULT_PASSWORD, "full_name": "Test Driver", "role": role}
-        payload.update(extra)
-        res = client.post("/api/auth/register", json=payload)
-        assert res.status_code == 201, res.text
+        with session_factory() as db:
+            extra.setdefault("full_name", "Test Driver")
+            auth_service.register_user(db, email=email, password=DEFAULT_PASSWORD, role=UserRole(role), **extra)
+        res = client.post("/api/auth/clerk", json={"token": clerk_token(email)})
+        assert res.status_code == 200, res.text
         return res.json()
 
     return _register

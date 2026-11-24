@@ -22,10 +22,12 @@ class User(TimestampMixin, Base):
 
     id: Mapped[int] = mapped_column(primary_key=True)
     email: Mapped[str] = mapped_column(String(255), unique=True, index=True)
-    # Null for accounts created with Google sign-in that never set a password.
+    # Null for accounts created through Clerk (or the old Google sign-in): Clerk owns passwords.
     hashed_password: Mapped[str | None] = mapped_column(String(255))
-    # Google's stable account ID ("sub" claim). Emails can change; this never does.
+    # Legacy: Google's account ID from before sign-in moved to Clerk. Kept for existing rows.
     google_sub: Mapped[str | None] = mapped_column(String(255), unique=True, index=True)
+    # Clerk's stable user ID ("user_..."). Every sign-in goes through Clerk.
+    clerk_user_id: Mapped[str | None] = mapped_column(String(255), unique=True, index=True)
     full_name: Mapped[str] = mapped_column(String(120))
     phone: Mapped[str | None] = mapped_column(String(30))
     avatar_url: Mapped[str | None] = mapped_column(String(500))
