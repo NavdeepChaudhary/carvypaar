@@ -10,7 +10,7 @@ import type { AuthResponse, ProfileUpdate, User } from "@/lib/types";
 
 /**
  * Sign-in is done by Clerk. Once Clerk says someone is signed in, we trade their Clerk
- * session token for a CarvyPaar session (POST /api/auth/clerk), which the rest of the app
+ * session token for a CarVypaar session (POST /api/auth/clerk), which the rest of the app
  * uses exactly as before: access token in memory, refresh token in an httpOnly cookie.
  */
 interface AuthContextValue {
@@ -26,7 +26,7 @@ const AuthContext = createContext<AuthContextValue | null>(null);
 
 type ApplySession = (session: AuthResponse | null) => void;
 
-/** Keeps the CarvyPaar session in step with Clerk's. Rendered only when Clerk is configured. */
+/** Keeps the CarVypaar session in step with Clerk's. Rendered only when Clerk is configured. */
 function ClerkSessionSync({
   applySession,
   hasSession,
@@ -57,7 +57,7 @@ function ClerkSessionSync({
           toast.error(err instanceof ApiError ? err.message : "Couldn't sign you in. Please try again.");
         }
       } else if (hasSession()) {
-        // Signed out of Clerk (here or in another tab): end the CarvyPaar session too.
+        // Signed out of Clerk (here or in another tab): end the CarVypaar session too.
         await apiFetch<void>("/api/auth/logout", { method: "POST", auth: false }).catch(() => undefined);
         if (!cancelled) applySession(null);
       }

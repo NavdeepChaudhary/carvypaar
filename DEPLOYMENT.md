@@ -1,6 +1,6 @@
-# Deploying CarvyPaar
+# Deploying CarVypaar
 
-This guide takes CarvyPaar from a fresh Linux server to a production deployment with
+This guide takes CarVypaar from a fresh Linux server to a production deployment with
 HTTPS, backups and monitoring, then covers scaling, upgrades and the security model.
 
 - [1. Architecture](#1-architecture)

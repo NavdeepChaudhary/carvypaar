@@ -1,1 +1,1 @@
-"""CarvyPaar price-prediction pipeline: data prep, synthetic data, training, evaluation."""
+"""CarVypaar price-prediction pipeline: data prep, synthetic data, training, evaluation."""

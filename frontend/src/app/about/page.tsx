@@ -5,16 +5,16 @@ import { LegalPage, List, Section } from "@/components/LegalPage";
 
 export const metadata: Metadata = {
   title: "About us",
-  description: "CarvyPaar is a used-car marketplace for India with live auctions and an AI price check on every listing.",
+  description: "CarVypaar is a used-car marketplace for India with live auctions and an AI price check on every listing.",
   alternates: { canonical: "/about" },
 };
 
 export default function AboutPage() {
   return (
     <LegalPage
-      title="About CarvyPaar"
+      title="About CarVypaar"
       showUpdated={false}
-      intro="CarvyPaar is a car marketplace built for people who love cars. Buy one, sell one, or win one in a live auction, and know what it's really worth before you decide."
+      intro="CarVypaar is a car marketplace built for people who love cars. Buy one, sell one, or win one in a live auction, and know what it's really worth before you decide."
     >
       <Section title="Why we built it">
         <p>

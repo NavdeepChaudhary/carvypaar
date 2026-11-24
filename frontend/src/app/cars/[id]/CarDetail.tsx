@@ -82,7 +82,7 @@ export default function CarDetailPage() {
   }, [car, router]);
 
   useEffect(() => {
-    if (car) document.title = `${car.title} · CarvyPaar`;
+    if (car) document.title = `${car.title} · CarVypaar`;
   }, [car]);
 
   if (error) {
@@ -222,7 +222,7 @@ export default function CarDetailPage() {
             </Link>
             <p className="mt-4 flex items-start gap-2 rounded-xl bg-elevated/60 p-3 text-xs text-muted">
               <ShieldCheck className="mt-0.5 h-4 w-4 shrink-0 text-ink" aria-hidden />
-              Never pay before seeing the car in person. Keep conversations on CarvyPaar.
+              Never pay before seeing the car in person. Keep conversations on CarVypaar.
             </p>
           </motion.div>
         </aside>

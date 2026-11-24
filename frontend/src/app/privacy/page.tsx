@@ -4,7 +4,7 @@ import { ContactLine, LegalPage, List, Section } from "@/components/LegalPage";
 
 export const metadata: Metadata = {
   title: "Privacy Policy",
-  description: "What personal data CarvyPaar collects, why, who we share it with, and the choices you have.",
+  description: "What personal data CarVypaar collects, why, who we share it with, and the choices you have.",
   alternates: { canonical: "/privacy" },
 };
 
@@ -12,7 +12,7 @@ export default function PrivacyPage() {
   return (
     <LegalPage
       title="Privacy Policy"
-      intro="This policy explains what personal data CarvyPaar collects when you use the site, why we collect it, and what you can do about it. We collect only what we need to run the marketplace."
+      intro="This policy explains what personal data CarVypaar collects when you use the site, why we collect it, and what you can do about it. We collect only what we need to run the marketplace."
     >
       <Section title="What we collect">
         <List
@@ -23,7 +23,7 @@ export default function PrivacyPage() {
             <><strong>Technical data:</strong> your IP address, browser type and basic logs, used to keep the site secure and working.</>,
           ]}
         />
-        <p>We do not collect card or bank details. CarvyPaar does not process payments between buyers and sellers.</p>
+        <p>We do not collect card or bank details. CarVypaar does not process payments between buyers and sellers.</p>
       </Section>
 
       <Section title="How we use it">
@@ -47,7 +47,7 @@ export default function PrivacyPage() {
       </Section>
 
       <Section title="Who we share it with">
-        <p>We do not sell your personal data. We share it only with services that help us run CarvyPaar:</p>
+        <p>We do not sell your personal data. We share it only with services that help us run CarVypaar:</p>
         <List
           items={[
             "Our sign-in provider (Clerk), which handles account sign-in, including Google sign-in.",
@@ -87,7 +87,7 @@ export default function PrivacyPage() {
       </Section>
 
       <Section title="Children">
-        <p>CarvyPaar is for people aged 18 and over. We do not knowingly collect data from children.</p>
+        <p>CarVypaar is for people aged 18 and over. We do not knowingly collect data from children.</p>
       </Section>
 
       <Section title="Changes and contact">

@@ -3,10 +3,10 @@ import { join } from "node:path";
 
 import { ImageResponse } from "next/og";
 
-// The preview image shown when a CarvyPaar link is shared (WhatsApp, X, Facebook, LinkedIn...).
+// The preview image shown when a CarVypaar link is shared (WhatsApp, X, Facebook, LinkedIn...).
 // Car pages override it with the car's own photo.
 export const dynamic = "force-static";
-export const alt = "CarvyPaar: buy, sell & auction cars";
+export const alt = "CarVypaar: buy, sell & auction cars";
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
 

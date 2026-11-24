@@ -1,4 +1,4 @@
-# ---- CarvyPaar web (Next.js standalone build) ----
+# ---- CarVypaar web (Next.js standalone build) ----
 FROM node:22-alpine AS deps
 WORKDIR /app
 COPY package.json package-lock.json* ./

@@ -25,7 +25,7 @@ export function TopPicks() {
     <section className="container-page pt-20" aria-labelledby="picks-heading">
       <div className="flex flex-wrap items-end justify-between gap-4">
         <div>
-          <h2 id="picks-heading" className="section-title">Fresh on CarvyPaar</h2>
+          <h2 id="picks-heading" className="section-title">Fresh on CarVypaar</h2>
           <p className="mt-1 text-sm text-muted">The latest cars listed, each with an AI price check.</p>
         </div>
         <Link

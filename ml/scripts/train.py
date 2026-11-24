@@ -1,4 +1,4 @@
-"""Train (or retrain) the CarvyPaar price model.
+"""Train (or retrain) the CarVypaar price model.
 
     python scripts/train.py                      # auto: REAL data (Kaggle + marketplace) if present, else synthetic
     python scripts/train.py --source synthetic   # synthetic only
@@ -8,7 +8,7 @@
 Data sources (all in ml/data/processed/, all in the same schema):
     synthetic.csv    generated market data (scripts/generate_synthetic.py)
     cardekho.csv     cleaned Kaggle data (scripts/download_data.py)
-    marketplace.csv  real CarvyPaar listings (backend: python -m app.cli export-training-data)
+    marketplace.csv  real CarVypaar listings (backend: python -m app.cli export-training-data)
 
 Outputs ml/models/price_model.joblib and ml/models/metrics.json. The API hot-reloads
 the new model on its next prediction; no restart needed.

@@ -1,6 +1,6 @@
 /** Site-wide facts used by metadata, the sitemap and the legal pages. */
 
-export const SITE_NAME = "CarvyPaar";
+export const SITE_NAME = "CarVypaar";
 export const SITE_TAGLINE = "Buy, sell & auction cars";
 export const SITE_DESCRIPTION =
   "The car marketplace for enthusiasts in India. Buy, sell and bid on cars in live auctions, with an AI price check on every listing.";

@@ -1,4 +1,4 @@
-# CarvyPaar reverse proxy: automatic HTTPS, one origin for the web app and the API.
+# CarVypaar reverse proxy: automatic HTTPS, one origin for the web app and the API.
 {
 	email {$ACME_EMAIL}
 }

@@ -1,4 +1,4 @@
-# CarvyPaar ML: AI price predictor
+# CarVypaar ML: AI price predictor
 
 Predicts a used car's market price in INR, with a **calibrated 80% price range**,
 the **top factors** behind the estimate, and a **deal rating** for listings.
@@ -37,7 +37,7 @@ The API hot-reloads the model on its next request after training, so there's no 
 |--------|---------|-------|
 | Synthetic (default) | `python scripts/generate_synthetic.py --rows 25000` | All 9 features. Prices from an explicit market model (depreciation by brand, mileage vs ~11k km/yr, condition, fuel, gearbox, city, ±8% noise). |
 | Kaggle CarDekho | `python scripts/download_data.py` | [nehalbirla/vehicle-dataset-from-cardekho](https://www.kaggle.com/datasets/nehalbirla/vehicle-dataset-from-cardekho), real Indian listings in INR. Needs Kaggle credentials, or download the zip manually into `data/raw/`. It has no body type, condition or city: body type is looked up from the model name, condition is inferred from ownership and age, and city becomes `unknown`. Years are shifted from the 2020 scrape date, keeping each car's age, and prices are inflated 5%/yr. |
-| Marketplace | `cd backend; python -m app.cli export-training-data` | Live and sold CarvyPaar listings. Sold auctions use the hammer price. |
+| Marketplace | `cd backend; python -m app.cli export-training-data` | Live and sold CarVypaar listings. Sold auctions use the hammer price. |
 
 `python scripts/train.py` (`--source auto`) combines every source that exists.
 Use `--source synthetic` or `--source cardekho` to train on a single source.
@@ -78,7 +78,7 @@ fallback for when no real data exists, so made-up prices never mix with real one
 - It has **no city information**, so location doesn't affect estimates.
 - It's mostly mass-market cars, so luxury models are thin and get "low confidence".
 
-**The fix is more recent data.** As real listings accumulate on CarvyPaar, run
+**The fix is more recent data.** As real listings accumulate on CarVypaar, run
 `python -m app.cli export-training-data` followed by `python scripts/train.py`. The marketplace export is
 combined with the Kaggle data automatically.
 

@@ -1,4 +1,4 @@
-# ---- CarvyPaar: single-container production image ----
+# ---- CarVypaar: single-container production image ----
 # Web app (Next.js) + API (FastAPI) behind Caddy on ONE port and origin, for platforms
 # that run one container per service (Render, Railway, Fly.io, Koyeb, ...).
 #   / -> Next.js     /api/*, /api/ws/*, /uploads/* -> FastAPI

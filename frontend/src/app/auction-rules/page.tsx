@@ -4,7 +4,7 @@ import { ContactLine, LegalPage, List, Section } from "@/components/LegalPage";
 
 export const metadata: Metadata = {
   title: "Auction Rules",
-  description: "How bidding, anti-sniping, reserve prices and winning work in CarvyPaar live auctions.",
+  description: "How bidding, anti-sniping, reserve prices and winning work in CarVypaar live auctions.",
   alternates: { canonical: "/auction-rules" },
 };
 
@@ -12,7 +12,7 @@ export default function AuctionRulesPage() {
   return (
     <LegalPage
       title="Auction Rules"
-      intro="CarvyPaar auctions are live and open: everyone sees the same price and the same clock. These rules keep every auction fair."
+      intro="CarVypaar auctions are live and open: everyone sees the same price and the same clock. These rules keep every auction fair."
     >
       <Section title="Placing a bid">
         <List
@@ -45,8 +45,8 @@ export default function AuctionRulesPage() {
         <List
           items={[
             "When the clock runs out, the highest bid wins, as long as any reserve has been met.",
-            "The winner and the seller are both notified and can message each other on CarvyPaar.",
-            "The winner and seller agree payment, inspection and handover between themselves. CarvyPaar does not hold or transfer money.",
+            "The winner and the seller are both notified and can message each other on CarVypaar.",
+            "The winner and seller agree payment, inspection and handover between themselves. CarVypaar does not hold or transfer money.",
             "Inspect the car and its documents before you pay. If the car is materially different from its listing, you are not obliged to buy it. Tell us so we can review the listing.",
           ]}
         />

@@ -1,6 +1,6 @@
 """Export real marketplace listings in the ML training schema (ml/carvypaar_ml/schema.py).
 
-Closing the loop: as CarvyPaar grows, retraining on its own listings makes the
+Closing the loop: as CarVypaar grows, retraining on its own listings makes the
 model reflect this market. We export:
   * fixed-price listings that are live or sold (asking price)
   * auctions that sold (the hammer price is the best signal of market value)

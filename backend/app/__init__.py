@@ -1,1 +1,1 @@
-"""CarvyPaar backend application package."""
+"""CarVypaar backend application package."""

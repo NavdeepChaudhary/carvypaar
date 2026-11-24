@@ -17,7 +17,7 @@ const display = Poppins({ subsets: ["latin"], variable: "--font-display", weight
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
   applicationName: SITE_NAME,
-  title: { default: "CarvyPaar | Buy, sell & auction cars", template: "%s · CarvyPaar" },
+  title: { default: "CarVypaar | Buy, sell & auction cars", template: "%s · CarVypaar" },
   description: SITE_DESCRIPTION,
   keywords: [
     "used cars India",
@@ -31,7 +31,7 @@ export const metadata: Metadata = {
     type: "website",
     siteName: SITE_NAME,
     locale: "en_IN",
-    title: "CarvyPaar | Buy, sell & auction cars",
+    title: "CarVypaar | Buy, sell & auction cars",
     description: SITE_DESCRIPTION,
   },
   twitter: { card: "summary_large_image" },

@@ -30,7 +30,7 @@ PROXY_PID=$!
 shutdown() { kill -TERM "$API_PID" "$WEB_PID" "$PROXY_PID" 2>/dev/null || true; wait || true; }
 trap shutdown TERM INT
 
-echo "CarvyPaar is up on port $PORT"
+echo "CarVypaar is up on port $PORT"
 # Wait for the first process to exit, then stop the rest (so the platform restarts us).
 wait -n
 status=$?

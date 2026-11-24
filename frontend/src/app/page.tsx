@@ -176,10 +176,10 @@ export default function HomePage() {
         </ol>
       </section>
 
-      {/* Why CarvyPaar */}
+      {/* Why CarVypaar */}
       <section className="container-page pt-20" aria-labelledby="why-heading">
         <div className="mx-auto max-w-2xl text-center">
-          <p className="text-xs font-bold uppercase tracking-[0.3em] text-ink dark:text-accent">Why CarvyPaar</p>
+          <p className="text-xs font-bold uppercase tracking-[0.3em] text-ink dark:text-accent">Why CarVypaar</p>
           <h2 id="why-heading" className="section-title mt-2">Built for people who love cars</h2>
         </div>
         <div className="mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">

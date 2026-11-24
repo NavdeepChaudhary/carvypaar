@@ -14,7 +14,7 @@ import { navigateAfterAuth, safeNext } from "@/lib/navigation";
 
 type Mode = "sign-in" | "sign-up";
 
-/** Clerk's sign-in or sign-up widget. After Clerk finishes, AuthContext opens the CarvyPaar
+/** Clerk's sign-in or sign-up widget. After Clerk finishes, AuthContext opens the CarVypaar
  *  session and this sends the person on to `?next=` (default: their profile). */
 export function ClerkAuthForm({ mode }: { mode: Mode }) {
   if (!CLERK_ENABLED) {
@@ -47,7 +47,7 @@ function ClerkForm({ mode }: { mode: Mode }) {
       <div role="alert" className="space-y-4 rounded-2xl border border-accent/40 bg-accent/10 p-5 text-sm">
         <p className="flex items-start gap-2 font-semibold text-fg">
           <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0 text-ink" aria-hidden />
-          You&apos;re signed in, but we couldn&apos;t open your CarvyPaar session.
+          You&apos;re signed in, but we couldn&apos;t open your CarVypaar session.
         </p>
         <p className="text-muted">The server may still be waking up. Try again in a moment.</p>
         <div className="flex flex-wrap gap-3">

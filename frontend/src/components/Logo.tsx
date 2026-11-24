@@ -13,13 +13,13 @@ import logoLight from "../../public/brand/carvypaar-logo.png";
 export function Logo({ inverted = false, className }: { inverted?: boolean; className?: string }) {
   const size = clsx("h-11 w-auto sm:h-12", className);
   return (
-    <Link href="/" className="flex shrink-0 items-center" aria-label="CarvyPaar home">
+    <Link href="/" className="flex shrink-0 items-center" aria-label="CarVypaar home">
       {inverted ? (
-        <Image src={logoDark} alt="CarvyPaar" sizes="240px" className={size} priority />
+        <Image src={logoDark} alt="CarVypaar" sizes="240px" className={size} priority />
       ) : (
         <>
-          <Image src={logoLight} alt="CarvyPaar" sizes="240px" className={clsx(size, "dark:hidden")} priority />
-          <Image src={logoDark} alt="CarvyPaar" sizes="240px" className={clsx(size, "hidden dark:block")} priority />
+          <Image src={logoLight} alt="CarVypaar" sizes="240px" className={clsx(size, "dark:hidden")} priority />
+          <Image src={logoDark} alt="CarVypaar" sizes="240px" className={clsx(size, "hidden dark:block")} priority />
         </>
       )}
     </Link>

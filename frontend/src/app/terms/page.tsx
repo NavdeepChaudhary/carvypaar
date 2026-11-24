@@ -5,7 +5,7 @@ import { ContactLine, LegalPage, List, Section } from "@/components/LegalPage";
 
 export const metadata: Metadata = {
   title: "Terms of Use",
-  description: "The rules for buying, selling and bidding on CarvyPaar.",
+  description: "The rules for buying, selling and bidding on CarVypaar.",
   alternates: { canonical: "/terms" },
 };
 
@@ -13,11 +13,11 @@ export default function TermsPage() {
   return (
     <LegalPage
       title="Terms of Use"
-      intro="These terms apply to everyone who uses CarvyPaar. By creating an account or using the site, you agree to them."
+      intro="These terms apply to everyone who uses CarVypaar. By creating an account or using the site, you agree to them."
     >
-      <Section title="What CarvyPaar is">
+      <Section title="What CarVypaar is">
         <p>
-          CarvyPaar is an online marketplace where people list, find and bid on cars. We are not the buyer or the
+          CarVypaar is an online marketplace where people list, find and bid on cars. We are not the buyer or the
           seller of any car. Every sale is an agreement between the buyer and the seller, and they are responsible for
           it.
         </p>
@@ -91,7 +91,7 @@ export default function TermsPage() {
 
       <Section title="Liability">
         <p>
-          We work to keep CarvyPaar accurate and available, but we provide it &quot;as is&quot;. We are not responsible
+          We work to keep CarVypaar accurate and available, but we provide it &quot;as is&quot;. We are not responsible
           for the condition, legality or ownership of any car, for what members say in listings or messages, or for
           any dispute between a buyer and a seller. To the extent the law allows, our liability to you is limited to
           the fees, if any, you have paid us.
@@ -108,7 +108,7 @@ export default function TermsPage() {
       <Section title="Changes">
         <p>
           We may update these terms. When we do, we will change the date at the top of this page. If you keep using
-          CarvyPaar after a change, the new terms apply to you.
+          CarVypaar after a change, the new terms apply to you.
         </p>
       </Section>
     </LegalPage>

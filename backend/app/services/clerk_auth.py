@@ -11,7 +11,7 @@ Clerk's Backend API (CLERK_SECRET_KEY) and only accept a *verified* primary emai
 
 Then we find the user by Clerk's stable user ID. Failing that, we link the account whose
 email matches (safe because Clerk verified the address). Failing that, we create a new
-buyer account. The caller then issues a normal CarvyPaar session for that user.
+buyer account. The caller then issues a normal CarVypaar session for that user.
 """
 from __future__ import annotations
 
@@ -38,7 +38,7 @@ from app.services.auth_service import AuthError
 logger = logging.getLogger("carvypaar.clerk")
 
 CLERK_API_URL = "https://api.clerk.com/v1"
-USER_AGENT = "CarvyPaar-API/1.0"
+USER_AGENT = "CarVypaar-API/1.0"
 
 
 @dataclass(frozen=True)
@@ -139,7 +139,7 @@ def get_identity(user_id: str) -> ClerkIdentity:
 
 
 def sign_in_with_clerk(db: Session, token: str) -> User:
-    """Verify the Clerk token and return the matching CarvyPaar user (created or linked if needed)."""
+    """Verify the Clerk token and return the matching CarVypaar user (created or linked if needed)."""
     clerk_id = verify_session_token(token)
     user = db.scalar(select(User).where(User.clerk_user_id == clerk_id))
     if user is None:

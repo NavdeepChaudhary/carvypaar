@@ -39,7 +39,7 @@ function LiveAuction({ initial }: { initial: AuctionDetail }) {
   const iWon = !!user && auction.winner_id === user.id;
 
   useEffect(() => {
-    document.title = `${live ? "🔴 LIVE · " : ""}${car.title} auction · CarvyPaar`;
+    document.title = `${live ? "🔴 LIVE · " : ""}${car.title} auction · CarVypaar`;
   }, [live, car.title]);
 
   // Celebrate (once) when the auction closes with this user as the winner.

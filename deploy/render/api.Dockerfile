@@ -1,4 +1,4 @@
-# ---- CarvyPaar API for Render (frontend on Vercel) ----
+# ---- CarVypaar API for Render (frontend on Vercel) ----
 # Build context: repository root (needs backend/ and the trained model in ml/models/).
 FROM python:3.12-slim
 

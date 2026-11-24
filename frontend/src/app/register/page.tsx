@@ -9,7 +9,7 @@ export default function RegisterPage() {
   return (
     <AuthCard
       eyebrow="Your keys"
-      title="Join the CarvyPaar garage"
+      title="Join the CarVypaar garage"
       subtitle="Buy, sell and bid on the cars you love. Want to sell? Switch to a seller account any time from the Sell page."
     >
       <Suspense fallback={null}>

@@ -1,5 +1,5 @@
 #!/usr/bin/env sh
-# Back up the CarvyPaar database and uploaded photos.
+# Back up the CarVypaar database and uploaded photos.
 #
 #   ./deploy/backup.sh                 # writes ./backups/<timestamp>/
 #   KEEP_DAYS=14 ./deploy/backup.sh    # prune backups older than 14 days (default 7)

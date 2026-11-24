@@ -1,4 +1,4 @@
-# ---- CarvyPaar ML trainer (one-shot job) ----
+# ---- CarVypaar ML trainer (one-shot job) ----
 # Same Python minor version and scikit-learn as the backend image, so the
 # pickled model loads there without compatibility issues.
 FROM python:3.12-slim

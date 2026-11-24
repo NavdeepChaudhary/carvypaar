@@ -1,5 +1,5 @@
 #!/bin/sh
-# Start the CarvyPaar API on Render: migrate, then serve on $PORT.
+# Start the CarVypaar API on Render: migrate, then serve on $PORT.
 set -eu
 
 # Photo URLs point straight at this service (RENDER_EXTERNAL_URL, e.g. https://carvypaar-api.onrender.com).

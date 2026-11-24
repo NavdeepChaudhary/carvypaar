@@ -1,7 +1,7 @@
 """/api/auth: Clerk sign-in exchange, refresh (rotating), logout.
 
 People sign up and sign in with Clerk (passwords, Google, email verification and resets
-all live there). The browser then trades its Clerk session token for a CarvyPaar session
+all live there). The browser then trades its Clerk session token for a CarVypaar session
 at POST /api/auth/clerk, and everything else works with that session as before.
 
 Browsers get the refresh token as an httpOnly, SameSite=Lax cookie scoped to
@@ -73,7 +73,7 @@ def _http_error(exc: AuthError) -> HTTPException:
 def clerk_sign_in(
     request: Request, response: Response, payload: ClerkAuthRequest, db: Session = Depends(get_db)
 ) -> TokenResponse:
-    """Exchange a Clerk session token for a CarvyPaar session. Creates the account on first use,
+    """Exchange a Clerk session token for a CarVypaar session. Creates the account on first use,
     or links an existing account with the same (Clerk-verified) email."""
     try:
         user = clerk_auth.sign_in_with_clerk(db, payload.token)

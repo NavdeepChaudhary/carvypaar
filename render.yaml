@@ -1,4 +1,4 @@
-# Render Blueprint for the CarvyPaar BACKEND (the website itself runs on Vercel).
+# Render Blueprint for the CarVypaar BACKEND (the website itself runs on Vercel).
 # Render dashboard -> New -> Blueprint -> pick this GitHub repository -> Apply.
 # When asked for CORS_ORIGINS, enter your Vercel address, e.g. https://carvypaar.vercel.app
 # Docs: https://render.com/docs/blueprint-spec

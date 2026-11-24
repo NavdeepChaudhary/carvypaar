@@ -81,7 +81,7 @@ export function Footer() {
       <div className="border-t border-navy-line">
         <div className="container-page flex flex-col items-center justify-between gap-4 py-6 text-xs sm:flex-row">
           <div className="flex flex-col items-center gap-2 sm:items-start">
-            <p>&copy; {new Date().getFullYear()} CarvyPaar. Built for people who love cars.</p>
+            <p>&copy; {new Date().getFullYear()} CarVypaar. Built for people who love cars.</p>
             <nav aria-label="Legal">
               <ul className="flex flex-wrap justify-center gap-x-4 gap-y-1">
                 {LEGAL.map((l) => (

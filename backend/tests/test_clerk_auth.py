@@ -155,7 +155,7 @@ def test_clerk_api_errors(monkeypatch, error, status):
 
 
 def test_full_exchange_through_the_api(client, monkeypatch):
-    """End to end: a signed Clerk token in, a CarvyPaar session out."""
+    """End to end: a signed Clerk token in, a CarVypaar session out."""
     monkeypatch.setattr(clerk_auth, "verify_session_token", REAL_VERIFY)
     monkeypatch.setattr(clerk_auth, "get_identity", REAL_IDENTITY)
     monkeypatch.setattr(clerk_auth.urllib.request, "urlopen", fake_urlopen(clerk_user()))

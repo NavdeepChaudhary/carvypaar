@@ -1,4 +1,4 @@
-# CarvyPaar full stack: PostgreSQL + FastAPI + Next.js + ML trainer
+# CarVypaar full stack: PostgreSQL + FastAPI + Next.js + ML trainer
 #   cp .env.example .env   (then edit secrets)
 #   docker compose up --build
 services:

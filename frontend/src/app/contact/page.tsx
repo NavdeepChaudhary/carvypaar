@@ -7,7 +7,7 @@ import { SUPPORT_EMAIL } from "@/lib/site";
 
 export const metadata: Metadata = {
   title: "Contact us",
-  description: "Get help with your CarvyPaar account, a listing or an auction.",
+  description: "Get help with your CarVypaar account, a listing or an auction.",
   alternates: { canonical: "/contact" },
 };
 
@@ -53,7 +53,7 @@ export default function ContactPage() {
 
       <Section title="Grievances">
         <p>
-          If you have a complaint about content on CarvyPaar or how we handle your data, write to us
+          If you have a complaint about content on CarVypaar or how we handle your data, write to us
           {SUPPORT_EMAIL ? (
             <>
               {" "}at{" "}

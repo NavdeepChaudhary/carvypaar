@@ -1,4 +1,4 @@
-# CarvyPaar
+# CarVypaar
 
 A car marketplace for enthusiasts: buy, sell and **auction** cars, with an **AI price predictor**.
 
@@ -265,7 +265,7 @@ are handled by [Clerk](https://clerk.com).
 - reads the person's verified email from Clerk's Backend API;
 - finds the user by their Clerk ID, links an existing account with the same verified email, or creates a
   new buyer account;
-- issues the normal CarvyPaar session (short access token + rotating refresh cookie).
+- issues the normal CarVypaar session (short access token + rotating refresh cookie).
 
 Admins: create the account with `python -m app.cli create-admin` (or `BOOTSTRAP_ADMIN_*` on Render), then sign
 up through Clerk with the same email. The two are linked on first sign-in.
@@ -275,7 +275,7 @@ up through Clerk with the same email. The two are linked on first sign-in.
 - **Tokens:** 15-minute access JWT (kept in memory only) plus a 7-day refresh JWT in an
   `httpOnly`, `SameSite=Lax` cookie scoped to `/api/auth`. Refresh tokens are stored by `jti`
   and **rotated** on every use. Replaying a rotated token revokes every session for that user.
-- **Passwords:** held by Clerk, never by CarvyPaar (along with brute-force protection, email
+- **Passwords:** held by Clerk, never by CarVypaar (along with brute-force protection, email
   verification and resets). Only Clerk-verified emails can create or link an account.
 - **Validation:** all input passes through Pydantic. New accounts are always buyers; unknown fields
   (such as `role`) are ignored on profile update.

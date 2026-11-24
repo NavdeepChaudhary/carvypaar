@@ -25,7 +25,7 @@ class Settings(BaseSettings):
     )
 
     # --- General ---
-    APP_NAME: str = "CarvyPaar"
+    APP_NAME: str = "CarVypaar"
     ENVIRONMENT: Literal["development", "test", "production"] = "development"
     API_PREFIX: str = "/api"
     LOG_LEVEL: str = "INFO"

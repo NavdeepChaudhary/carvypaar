@@ -1,5 +1,5 @@
 /**
- * Typed fetch wrapper for the CarvyPaar API.
+ * Typed fetch wrapper for the CarVypaar API.
  *
  * Token strategy:
  *  - Access token lives only in memory (never localStorage), so XSS can't steal it.
@@ -14,7 +14,7 @@ export const API_URL = (process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:800
 /** GitHub Pages preview: there is no backend, so API calls fail fast with a clear message. */
 export const STATIC_DEMO = process.env.NEXT_PUBLIC_STATIC_DEMO === "1";
 export const DEMO_MESSAGE =
-  "This is a preview on GitHub Pages. Signing in, listings, auctions and price checks need the CarvyPaar server, which isn't connected here.";
+  "This is a preview on GitHub Pages. Signing in, listings, auctions and price checks need the CarVypaar server, which isn't connected here.";
 
 let accessToken: string | null = null;
 type SessionListener = (session: AuthResponse | null) => void;
