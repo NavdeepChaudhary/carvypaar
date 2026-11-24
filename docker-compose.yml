@@ -55,6 +55,7 @@ services:
       args:
         # Baked into the browser bundle: must be reachable from the user's browser.
         NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL:-http://localhost:8000}
+        NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY: ${CLERK_PUBLISHABLE_KEY:-}
     restart: unless-stopped
     depends_on:
       backend:

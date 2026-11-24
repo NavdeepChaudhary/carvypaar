@@ -17,7 +17,21 @@ const backendOrigin = backendUrl ? new URL(backendUrl).origin : null;
 // 'self' already covers same-origin requests (incl. ws/wss).
 const apiOrigin = apiUrl ? ` ${apiUrl.origin}` : backendOrigin ? ` ${backendOrigin}` : ""; // photos are served by the backend
 const wsOrigin = apiUrl ? ` ${apiUrl.origin.replace(/^http/, "ws")}` : wsDirect ? ` ${new URL(wsDirect).origin}` : "";
-const GOOGLE = "https://accounts.google.com"; // Google Identity Services (sign-in button)
+// Clerk (sign-in): its script and API live on the instance's "frontend API" host, which the
+// publishable key encodes: pk_test_<base64("my-app.clerk.accounts.dev$")>.
+function clerkFrontendApi(key) {
+  try {
+    const host = Buffer.from((key ?? "").split("_")[2] ?? "", "base64").toString().replace(/\$$/, "");
+    return /^[a-z0-9.-]+$/i.test(host) ? `https://${host}` : null;
+  } catch {
+    return null;
+  }
+}
+const clerkApi = clerkFrontendApi(process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY);
+// Clerk's bot protection: Cloudflare Turnstile plus its own "protect" script and endpoints.
+const CLERK = clerkApi ? ` ${clerkApi} https://challenges.cloudflare.com https://cdn.protect.clerk.com` : "";
+// The bot check probes several ports on its own hosts.
+const CLERK_CONNECT = clerkApi ? ` ${clerkApi} https://*.protect.clerk.com https://*.protect.clerk.com:*` : "";
 
 /**
  * Content Security Policy.
@@ -29,12 +43,13 @@ const GOOGLE = "https://accounts.google.com"; // Google Identity Services (sign-
  */
 const csp = [
   "default-src 'self'",
-  `script-src 'self' 'unsafe-inline' ${GOOGLE}${isDev ? " 'unsafe-eval'" : ""}`,
-  `style-src 'self' 'unsafe-inline' ${GOOGLE}`,
-  `frame-src ${GOOGLE}`, // the Google sign-in button and popup
-  `img-src 'self' data: blob: https://images.unsplash.com${apiOrigin}`,
+  `script-src 'self' 'unsafe-inline'${CLERK}${isDev ? " 'unsafe-eval'" : ""}`,
+  "style-src 'self' 'unsafe-inline'",
+  `frame-src 'self'${CLERK}`, // Clerk's bot check
+  "worker-src 'self' blob:", // Clerk runs a small worker to keep the session fresh
+  `img-src 'self' data: blob: https://images.unsplash.com https://img.clerk.com${apiOrigin}`,
   "font-src 'self'",
-  `connect-src 'self'${apiOrigin}${wsOrigin} ${GOOGLE}${isDev ? " ws://localhost:3000 ws://127.0.0.1:3000" : ""}`,
+  `connect-src 'self'${apiOrigin}${wsOrigin}${CLERK_CONNECT}${isDev ? " ws://localhost:3000 ws://127.0.0.1:3000" : ""}`,
   "frame-ancestors 'none'",
   "base-uri 'self'",
   "form-action 'self'",
@@ -48,7 +63,7 @@ const securityHeaders = [
   { key: "X-Frame-Options", value: "DENY" },
   { key: "Referrer-Policy", value: "strict-origin-when-cross-origin" },
   { key: "Permissions-Policy", value: "camera=(), microphone=(), geolocation=(), payment=()" },
-  // same-origin-allow-popups: the Google sign-in popup must be able to post its result back.
+  // same-origin-allow-popups: Clerk's "Continue with Google" popup must be able to post its result back.
   { key: "Cross-Origin-Opener-Policy", value: "same-origin-allow-popups" },
   ...(isDev ? [] : [{ key: "Strict-Transport-Security", value: "max-age=63072000; includeSubDomains" }]),
 ];
@@ -93,6 +108,7 @@ const pagesConfig = {
     NEXT_PUBLIC_API_URL: "",
     NEXT_PUBLIC_WS_URL: "",
     NEXT_PUBLIC_STATIC_DEMO: "1",
+    NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY: "", // no sign-in in the backend-less preview
     NEXT_PUBLIC_BASE_PATH: basePath,
   },
 };

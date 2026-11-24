@@ -53,9 +53,11 @@ class Settings(BaseSettings):
     # --- CORS (comma-separated list of origins) ---
     CORS_ORIGINS: str = "http://localhost:3000,http://127.0.0.1:3000"
 
-    # --- Google sign-in (Google Identity Services) ---
-    # OAuth 2.0 Web client ID from Google Cloud Console. Leave unset to hide the button.
-    GOOGLE_CLIENT_ID: str | None = None
+    # --- Sign-in (Clerk) ---
+    # From the Clerk dashboard -> API keys. The publishable key is public (it names the Clerk
+    # instance whose tokens we accept); the secret key reads users' verified emails.
+    CLERK_PUBLISHABLE_KEY: str | None = None
+    CLERK_SECRET_KEY: str | None = None
 
     # --- Brute-force protection (per email + IP; see app/core/lockout.py) ---
     LOGIN_LOCKOUT_ATTEMPTS: int = 5

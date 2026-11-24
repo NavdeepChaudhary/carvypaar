@@ -6,7 +6,7 @@ import pytest
 from app.core.config import settings
 from app.core.security import hash_password, utcnow
 from app.models import User, UserRole
-from tests.conftest import auth_header
+from tests.conftest import auth_header, clerk_token
 from tests.test_auctions import bid, start_auction
 from tests.test_listings import create_car
 
@@ -16,7 +16,7 @@ def admin(client, db_session):
     db_session.add(User(email="boss@example.com", full_name="Boss Admin", role=UserRole.ADMIN,
                         hashed_password=hash_password("Adm1nPass!")))
     db_session.commit()
-    return client.post("/api/auth/login", json={"email": "boss@example.com", "password": "Adm1nPass!"}).json()
+    return client.post("/api/auth/clerk", json={"token": clerk_token("boss@example.com")}).json()
 
 
 @pytest.fixture()

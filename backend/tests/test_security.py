@@ -1,4 +1,4 @@
-"""Security hardening: headers, body limits, brute-force lockout, JWT claims,
+"""Security hardening: headers, body limits, JWT claims,
 password policy, production config guards, input bounds, Redis fan-out."""
 import asyncio
 from datetime import timedelta
@@ -11,7 +11,7 @@ from pydantic import ValidationError
 
 from app.core.config import Settings, settings
 from app.core.security import create_access_token, utcnow
-from tests.conftest import DEFAULT_PASSWORD, auth_header
+from tests.conftest import auth_header
 from tests.test_listings import create_car
 
 
@@ -48,14 +48,14 @@ def test_uploaded_files_are_sandboxed(client, register_user):
 
 
 def test_cors_rejects_unknown_origin(client):
-    res = client.options("/api/auth/login", headers={"Origin": "https://evil.example", "Access-Control-Request-Method": "POST"})
+    res = client.options("/api/auth/refresh", headers={"Origin": "https://evil.example", "Access-Control-Request-Method": "POST"})
     assert "access-control-allow-origin" not in res.headers
 
 
 # ---------------------------------------------------------------- body size
 def test_oversized_json_body_rejected_before_parsing(client):
     huge = "x" * (settings.MAX_JSON_BODY_KB * 1024 + 10)
-    res = client.post("/api/auth/login", content=f'{{"email":"a@b.co","password":"{huge}"}}',
+    res = client.post("/api/auth/clerk", content=f'{{"token":"{huge}"}}',
                       headers={"Content-Type": "application/json"})
     assert res.status_code == 413
     assert res.headers["x-content-type-options"] == "nosniff"  # headers still applied to the 413
@@ -66,7 +66,7 @@ def test_chunked_body_without_length_still_limited(client):
         for _ in range(settings.MAX_JSON_BODY_KB + 5):
             yield b"x" * 1024
 
-    res = client.post("/api/auth/login", content=gen(), headers={"Content-Type": "application/json"})
+    res = client.post("/api/auth/clerk", content=gen(), headers={"Content-Type": "application/json"})
     assert res.status_code == 413
 
 
@@ -77,34 +77,6 @@ def test_upload_route_allows_larger_bodies(client, register_user):
     res = client.post(f"/api/listings/{car['id']}/images", files=[("files", ("a.png", payload, "image/png"))],
                       headers=auth_header(seller["access_token"]))
     assert res.status_code == 422  # reached the image validator (not a valid PNG), not a 413
-
-
-# ---------------------------------------------------------------- brute force
-def test_login_lockout_after_repeated_failures(client, register_user):
-    register_user("victim@example.com")
-    for _ in range(settings.LOGIN_LOCKOUT_ATTEMPTS):
-        assert client.post("/api/auth/login", json={"email": "victim@example.com", "password": "Wrong1234"}).status_code == 401
-    locked = client.post("/api/auth/login", json={"email": "victim@example.com", "password": DEFAULT_PASSWORD})
-    assert locked.status_code == 429  # even the right password, until the window passes
-    assert int(locked.headers["retry-after"]) > 0
-
-
-def test_successful_login_resets_failure_count(client, register_user):
-    register_user("user@example.com")
-    for _ in range(settings.LOGIN_LOCKOUT_ATTEMPTS - 1):
-        client.post("/api/auth/login", json={"email": "user@example.com", "password": "Wrong1234"})
-    assert client.post("/api/auth/login", json={"email": "user@example.com", "password": DEFAULT_PASSWORD}).status_code == 200
-    for _ in range(settings.LOGIN_LOCKOUT_ATTEMPTS - 1):
-        client.post("/api/auth/login", json={"email": "user@example.com", "password": "Wrong1234"})
-    assert client.post("/api/auth/login", json={"email": "user@example.com", "password": DEFAULT_PASSWORD}).status_code == 200
-
-
-def test_lockout_is_per_account(client, register_user):
-    register_user("a@example.com")
-    register_user("b@example.com")
-    for _ in range(settings.LOGIN_LOCKOUT_ATTEMPTS):
-        client.post("/api/auth/login", json={"email": "a@example.com", "password": "Wrong1234"})
-    assert client.post("/api/auth/login", json={"email": "b@example.com", "password": DEFAULT_PASSWORD}).status_code == 200
 
 
 # ---------------------------------------------------------------- JWT
@@ -135,9 +107,12 @@ def test_expired_token_rejected(client, register_user, monkeypatch):
 
 # ---------------------------------------------------------------- password policy
 @pytest.mark.parametrize("pw", ["Password123", "qwerty123", "Carvypaar1"])
-def test_common_passwords_rejected(client, pw):
-    res = client.post("/api/auth/register", json={"email": "c@example.com", "password": pw, "full_name": "Common"})
-    assert res.status_code == 422 and "too common" in res.text
+def test_common_passwords_rejected(pw):
+    # Still enforced for admin accounts made with `python -m app.cli create-admin`.
+    from app.schemas.auth import RegisterRequest
+
+    with pytest.raises(ValidationError, match="too common"):
+        RegisterRequest(email="c@example.com", password=pw, full_name="Common")
 
 
 # ---------------------------------------------------------------- production guards

@@ -30,9 +30,12 @@ services:
         value: "true"
       - key: WEB_CONCURRENCY
         value: "1"               # free instances have 512 MB RAM
-      - key: GOOGLE_CLIENT_ID
-        sync: false              # optional: enables "Sign in with Google"
-      # First admin account (free plan has no shell). Use a strong, unique password.
+      - key: CLERK_PUBLISHABLE_KEY
+        sync: false              # Clerk dashboard -> API keys (same key as the website's)
+      - key: CLERK_SECRET_KEY
+        sync: false              # Clerk dashboard -> API keys
+      # First admin account (free plan has no shell). Then sign up on the site with Clerk
+      # using this same email: the accounts are linked and you're signed in as admin.
       - key: BOOTSTRAP_ADMIN_EMAIL
         sync: false
       - key: BOOTSTRAP_ADMIN_PASSWORD

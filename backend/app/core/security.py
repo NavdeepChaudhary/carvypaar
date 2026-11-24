@@ -32,15 +32,6 @@ def verify_password(password: str, hashed: str) -> bool:
         return False
 
 
-# A pre-computed hash used to equalise login timing when the email doesn't exist,
-# so attackers can't enumerate accounts by measuring response time.
-_DUMMY_HASH = bcrypt.hashpw(b"timing-equaliser", bcrypt.gensalt(rounds=settings.BCRYPT_ROUNDS)).decode()
-
-
-def dummy_verify() -> None:
-    verify_password("not-the-password", _DUMMY_HASH)
-
-
 # ---------------------------------------------------------------- JWT
 def utcnow() -> datetime:
     return datetime.now(timezone.utc)
