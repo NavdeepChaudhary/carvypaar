@@ -1,3 +1,6 @@
+import { readFile } from "node:fs/promises";
+import { join } from "node:path";
+
 import { ImageResponse } from "next/og";
 
 // The preview image shown when a CarvyPaar link is shared (WhatsApp, X, Facebook, LinkedIn...).
@@ -7,7 +10,9 @@ export const alt = "CarvyPaar: buy, sell & auction cars";
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
 
-export default function OpengraphImage() {
+export default async function OpengraphImage() {
+  const logo = await readFile(join(process.cwd(), "public/brand/carvypaar-logo-dark.png"));
+  const logoSrc = `data:image/png;base64,${logo.toString("base64")}`;
   return new ImageResponse(
     (
       <div
@@ -23,10 +28,9 @@ export default function OpengraphImage() {
           fontFamily: "sans-serif",
         }}
       >
-        <div style={{ display: "flex", fontSize: 96, fontWeight: 800, letterSpacing: -2 }}>
-          Carvy<span style={{ color: "#ffc107" }}>Paar</span>
-        </div>
-        <div style={{ marginTop: 24, fontSize: 44, fontWeight: 600 }}>Buy, sell &amp; auction cars</div>
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img src={logoSrc} alt="" width={686} height={144} />
+        <div style={{ marginTop: 40, fontSize: 44, fontWeight: 600 }}>Buy, sell &amp; auction cars</div>
         <div style={{ marginTop: 40, display: "flex", gap: 20, fontSize: 30, color: "#ffc107" }}>
           <span>Live auctions</span>
           <span style={{ color: "rgba(255,255,255,0.4)" }}>·</span>

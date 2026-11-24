@@ -1,27 +1,27 @@
 import { clsx } from "clsx";
-import { CarFront } from "lucide-react";
+import Image from "next/image";
 import Link from "next/link";
 
-/** Brand mark. `inverted` for dark (navy) backgrounds like the footer. */
-export function Logo({ inverted = false }: { inverted?: boolean }) {
+import logoDark from "../../public/brand/carvypaar-logo-dark.png";
+import logoLight from "../../public/brand/carvypaar-logo.png";
+
+/**
+ * Brand logo. The navy lettering version is for light backgrounds; the white lettering one is
+ * for dark backgrounds. `inverted` always uses the white one (e.g. the navy footer); otherwise
+ * it follows the site theme.
+ */
+export function Logo({ inverted = false, className }: { inverted?: boolean; className?: string }) {
+  const size = clsx("h-11 w-auto sm:h-12", className);
   return (
-    <Link href="/" className="group flex items-center gap-2.5" aria-label="CarvyPaar home">
-      <span
-        className={clsx(
-          "grid h-10 w-10 place-items-center rounded-xl border-2 border-accent transition-transform group-hover:-rotate-6",
-          inverted ? "text-accent" : "text-ink dark:text-accent",
-        )}
-      >
-        <CarFront className="h-5 w-5" aria-hidden />
-      </span>
-      <span className="flex flex-col leading-none">
-        <span className={clsx("font-display text-xl font-extrabold tracking-tight", inverted ? "text-white" : "text-fg")}>
-          Carvy<span className="text-accent">Paar</span>
-        </span>
-        <span className={clsx("mt-1 text-[10px] font-semibold uppercase tracking-[0.25em]", inverted ? "text-white/60" : "text-muted")}>
-          Buy · Sell · Bid
-        </span>
-      </span>
+    <Link href="/" className="flex shrink-0 items-center" aria-label="CarvyPaar home">
+      {inverted ? (
+        <Image src={logoDark} alt="CarvyPaar" sizes="240px" className={size} priority />
+      ) : (
+        <>
+          <Image src={logoLight} alt="CarvyPaar" sizes="240px" className={clsx(size, "dark:hidden")} priority />
+          <Image src={logoDark} alt="CarvyPaar" sizes="240px" className={clsx(size, "hidden dark:block")} priority />
+        </>
+      )}
     </Link>
   );
 }
