@@ -6,6 +6,7 @@ import { DemoBanner } from "@/components/DemoBanner";
 import { Footer } from "@/components/Footer";
 import { Navbar } from "@/components/Navbar";
 import { Providers } from "@/components/Providers";
+import { ScrollButton } from "@/components/ScrollButton";
 import { themeInitScript } from "@/context/ThemeContext";
 import { SITE_DESCRIPTION, SITE_NAME, SITE_URL } from "@/lib/site";
 
@@ -75,6 +76,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
             {children}
           </main>
           <Footer />
+          <ScrollButton />
           <DemoBanner />
         </Providers>
       </body>
