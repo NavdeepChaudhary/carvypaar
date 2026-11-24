@@ -28,6 +28,21 @@ const COLUMNS: { title: string; links: { href: string; label: string }[] }[] = [
       { href: "/register", label: "Create account" },
     ],
   },
+  {
+    title: "Company",
+    links: [
+      { href: "/about", label: "About us" },
+      { href: "/contact", label: "Contact us" },
+      { href: "/auction-rules", label: "Auction rules" },
+    ],
+  },
+];
+
+const LEGAL = [
+  { href: "/terms", label: "Terms of Use" },
+  { href: "/privacy", label: "Privacy Policy" },
+  { href: "/auction-rules", label: "Auction Rules" },
+  { href: "/contact", label: "Contact" },
 ];
 
 const TRUST = [
@@ -40,7 +55,7 @@ const TRUST = [
 export function Footer() {
   return (
     <footer className="bg-navy text-white/75">
-      <div className="container-page grid gap-10 py-14 sm:grid-cols-2 lg:grid-cols-[1.4fr_1fr_1fr_1fr]">
+      <div className="container-page grid gap-10 py-14 sm:grid-cols-2 lg:grid-cols-[1.4fr_1fr_1fr_1fr_1fr]">
         <div>
           <Logo inverted />
           <p className="mt-5 max-w-xs text-sm leading-relaxed text-white/60">
@@ -65,7 +80,20 @@ export function Footer() {
 
       <div className="border-t border-navy-line">
         <div className="container-page flex flex-col items-center justify-between gap-4 py-6 text-xs sm:flex-row">
-          <p>&copy; {new Date().getFullYear()} CarvyPaar. Built for people who love cars.</p>
+          <div className="flex flex-col items-center gap-2 sm:items-start">
+            <p>&copy; {new Date().getFullYear()} CarvyPaar. Built for people who love cars.</p>
+            <nav aria-label="Legal">
+              <ul className="flex flex-wrap justify-center gap-x-4 gap-y-1">
+                {LEGAL.map((l) => (
+                  <li key={l.href}>
+                    <Link href={l.href} className="underline-offset-2 transition-colors hover:text-accent hover:underline">
+                      {l.label}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </nav>
+          </div>
           <ul className="flex flex-wrap justify-center gap-4">
             {TRUST.map(({ icon: Icon, label }) => (
               <li key={label} className="flex items-center gap-1.5">

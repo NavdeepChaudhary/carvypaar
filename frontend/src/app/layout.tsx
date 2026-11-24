@@ -7,6 +7,7 @@ import { Footer } from "@/components/Footer";
 import { Navbar } from "@/components/Navbar";
 import { Providers } from "@/components/Providers";
 import { themeInitScript } from "@/context/ThemeContext";
+import { SITE_DESCRIPTION, SITE_NAME, SITE_URL } from "@/lib/site";
 
 import "./globals.css";
 
@@ -14,9 +15,36 @@ const sans = Inter({ subsets: ["latin"], variable: "--font-sans", display: "swap
 const display = Poppins({ subsets: ["latin"], variable: "--font-display", weight: ["500", "600", "700", "800", "900"], display: "swap" });
 
 export const metadata: Metadata = {
+  metadataBase: new URL(SITE_URL),
+  applicationName: SITE_NAME,
   title: { default: "CarvyPaar | Buy, sell & auction cars", template: "%s · CarvyPaar" },
-  description:
-    "The car marketplace for enthusiasts. Buy, sell and bid on cars in live auctions, with AI price estimates on every listing.",
+  description: SITE_DESCRIPTION,
+  keywords: [
+    "used cars India",
+    "second hand cars",
+    "sell my car",
+    "car auction",
+    "car price check",
+    "used car valuation",
+  ],
+  openGraph: {
+    type: "website",
+    siteName: SITE_NAME,
+    locale: "en_IN",
+    title: "CarvyPaar | Buy, sell & auction cars",
+    description: SITE_DESCRIPTION,
+  },
+  twitter: { card: "summary_large_image" },
+  formatDetection: { telephone: false },
+};
+
+/** Tells search engines who runs the site (shown in Google's knowledge panel). */
+const organizationJsonLd = {
+  "@context": "https://schema.org",
+  "@graph": [
+    { "@type": "Organization", "@id": `${SITE_URL}/#org`, name: SITE_NAME, url: SITE_URL, logo: `${SITE_URL}/icon.svg` },
+    { "@type": "WebSite", "@id": `${SITE_URL}/#site`, name: SITE_NAME, url: SITE_URL, publisher: { "@id": `${SITE_URL}/#org` } },
+  ],
 };
 
 export const viewport: Viewport = {
@@ -32,6 +60,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
       <head>
         {/* Applies the saved theme before first paint (no flash). */}
         <script dangerouslySetInnerHTML={{ __html: themeInitScript }} />
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationJsonLd) }} />
       </head>
       <body className="flex min-h-screen flex-col">
         <a
