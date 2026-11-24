@@ -38,10 +38,21 @@ export function clerkAppearance(theme: Theme) {
       card: "!shadow-none !bg-transparent !px-0 !pt-0",
       header: "hidden", // the page shows its own title
       socialButtonsBlockButton: "!h-11 !border !border-line hover:!border-accent",
-      formButtonPrimary: "!h-11 !font-semibold !shadow-glow",
+      // The form's main button is a car's round ENGINE START push-button (text set in clerkLocalization).
+      formButtonPrimary: [
+        "!mx-auto !mt-2 !flex !h-28 !w-28 !flex-col !items-center !justify-center !rounded-full !px-3",
+        "!whitespace-normal !text-center !text-[11px] !font-extrabold !uppercase !leading-tight !tracking-[0.18em]",
+        "!bg-[radial-gradient(circle_at_32%_28%,#46516f,#0b1630_72%)] !text-white !transition !duration-200",
+        "!shadow-[0_0_0_4px_#c3c9d6,0_0_0_8px_#0b1630,0_0_26px_6px_rgba(239,68,68,0.55)]",
+        "hover:!shadow-[0_0_0_4px_#c3c9d6,0_0_0_8px_#0b1630,0_0_38px_12px_rgba(239,68,68,0.85)]",
+        "active:!scale-95 [&_svg]:!hidden",
+      ].join(" "),
       formFieldInput: "!h-11",
       footer: "!bg-none !bg-transparent",
       footerActionLink: "!font-semibold !text-ink hover:!underline",
     },
   };
 }
+
+/** Clerk's button text: the main button reads like a car's push-to-start button. */
+export const clerkLocalization = { formButtonPrimary: "Start engine" };
