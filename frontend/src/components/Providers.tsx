@@ -7,7 +7,7 @@ import { Toaster } from "sonner";
 
 import { AuthProvider } from "@/context/AuthContext";
 import { ThemeProvider, useTheme } from "@/context/ThemeContext";
-import { CLERK_ENABLED, CLERK_PUBLISHABLE_KEY, clerkAppearance, clerkLocalization } from "@/lib/clerk";
+import { CLERK_ENABLED, CLERK_PUBLISHABLE_KEY, clerkAppearance } from "@/lib/clerk";
 
 function ThemedToaster() {
   const { theme } = useTheme();
@@ -22,7 +22,6 @@ function SignInProvider({ children }: { children: ReactNode }) {
     <ClerkProvider
       publishableKey={CLERK_PUBLISHABLE_KEY}
       appearance={clerkAppearance(theme)}
-      localization={clerkLocalization}
       signInUrl="/login"
       signUpUrl="/register"
       afterSignOutUrl="/"
