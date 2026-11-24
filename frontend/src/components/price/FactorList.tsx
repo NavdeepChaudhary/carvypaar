@@ -26,7 +26,7 @@ export function FactorList({ factors }: { factors: PriceFactor[] }) {
                 <span className="ml-2 text-muted">{f.value}</span>
               </span>
               <span className={clsx("flex shrink-0 items-center gap-1 font-display text-sm font-bold tabular-nums",
-                up ? "text-emerald-400" : "text-accent")}>
+                up ? "text-emerald-600 dark:text-emerald-400" : "text-ink")}>
                 {up ? <TrendingUp className="h-3.5 w-3.5" aria-hidden /> : <TrendingDown className="h-3.5 w-3.5" aria-hidden />}
                 {up ? "+" : "−"}{formatPriceShort(Math.abs(f.impact))}
               </span>

@@ -20,7 +20,7 @@ import type { AdminAuctionRow, AuctionStatus, Page } from "@/lib/types";
 
 const FILTERS: AdminAuctionStatus[] = ["all", "live", "scheduled", "ended", "cancelled"];
 const STATUS_CLASS: Record<AuctionStatus, string> = {
-  live: "bg-accent text-white",
+  live: "bg-accent text-on-accent",
   scheduled: "bg-neon/15 text-neon",
   ended: "bg-muted/15 text-muted",
   cancelled: "bg-muted/15 text-muted line-through",
@@ -66,7 +66,7 @@ export function AuctionsTable() {
         {FILTERS.map((f) => (
           <button key={f} type="button" role="tab" aria-selected={status === f} onClick={() => { setStatus(f); setPage(1); }}
             className={clsx("rounded-full px-3.5 py-1.5 text-xs font-semibold capitalize transition-colors",
-              status === f ? "bg-accent text-white" : "border border-line text-muted hover:text-fg")}>
+              status === f ? "bg-accent text-on-accent" : "border border-line text-muted hover:text-fg")}>
             {f}
           </button>
         ))}
@@ -99,7 +99,7 @@ export function AuctionsTable() {
                   return (
                     <tr key={a.id} className="border-b border-line/40 last:border-0">
                       <td className="px-4 py-3">
-                        <Link href={`/auctions/${a.id}`} className="flex items-center gap-3 hover:text-accent">
+                        <Link href={`/auctions/${a.id}`} className="flex items-center gap-3 hover:text-ink">
                           <CarImage src={row.cover_image} alt="" className="h-10 w-16 shrink-0 rounded-lg" />
                           <span className="min-w-0">
                             <span className="block truncate font-semibold">{row.listing_title}</span>

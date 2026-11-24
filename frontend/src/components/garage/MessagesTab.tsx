@@ -98,12 +98,12 @@ export function MessagesTab({ meId }: { meId: number }) {
                 <div className="flex items-center justify-between gap-2">
                   <p className="truncate font-semibold">{t.other.full_name}</p>
                   {t.unread > 0 && (
-                    <span className="grid h-5 min-w-5 place-items-center rounded-full bg-accent px-1 text-[11px] font-bold text-white" aria-label={`${t.unread} unread`}>
+                    <span className="grid h-5 min-w-5 place-items-center rounded-full bg-accent px-1 text-[11px] font-bold text-on-accent" aria-label={`${t.unread} unread`}>
                       {t.unread}
                     </span>
                   )}
                 </div>
-                <p className="truncate text-xs text-accent">{t.listingTitle}</p>
+                <p className="truncate text-xs text-ink">{t.listingTitle}</p>
                 <p className="mt-1 truncate text-xs text-muted">{last.body}</p>
               </button>
             </li>
@@ -119,7 +119,7 @@ export function MessagesTab({ meId }: { meId: number }) {
             </button>
             <div className="min-w-0">
               <p className="font-semibold">{active.other.full_name}</p>
-              <Link href={`/cars/${active.listingId}`} className="block truncate text-xs text-accent hover:underline">{active.listingTitle}</Link>
+              <Link href={`/cars/${active.listingId}`} className="block truncate text-xs text-ink hover:underline">{active.listingTitle}</Link>
             </div>
           </div>
           <div className="flex-1 space-y-3 overflow-y-auto p-4" aria-live="polite">
@@ -127,9 +127,9 @@ export function MessagesTab({ meId }: { meId: number }) {
               const mine = m.sender.id === meId;
               return (
                 <div key={m.id} className={clsx("flex", mine ? "justify-end" : "justify-start")}>
-                  <div className={clsx("max-w-[80%] rounded-2xl px-4 py-2.5 text-sm", mine ? "rounded-br-sm bg-accent text-white" : "rounded-bl-sm bg-elevated")}>
+                  <div className={clsx("max-w-[80%] rounded-2xl px-4 py-2.5 text-sm", mine ? "rounded-br-sm bg-accent text-on-accent" : "rounded-bl-sm bg-elevated")}>
                     <p className="whitespace-pre-line break-words">{m.body}</p>
-                    <p className={clsx("mt-1 text-[10px]", mine ? "text-white/70" : "text-muted")}>{timeAgo(m.created_at)}</p>
+                    <p className={clsx("mt-1 text-[10px]", mine ? "text-on-accent/70" : "text-muted")}>{timeAgo(m.created_at)}</p>
                   </div>
                 </div>
               );
@@ -141,7 +141,7 @@ export function MessagesTab({ meId }: { meId: number }) {
             <input id="reply" value={draft} onChange={(e) => setDraft(e.target.value)} maxLength={2000} placeholder="Write a reply…"
               className="h-11 flex-1 rounded-xl border border-line bg-elevated/60 px-4 text-sm focus:border-accent focus:outline-none" />
             <button type="submit" disabled={sending || !draft.trim()} aria-label="Send reply"
-              className="grid h-11 w-11 place-items-center rounded-xl bg-accent text-white disabled:opacity-50">
+              className="grid h-11 w-11 place-items-center rounded-xl bg-accent text-on-accent disabled:opacity-50">
               <Send className="h-4 w-4" />
             </button>
           </form>

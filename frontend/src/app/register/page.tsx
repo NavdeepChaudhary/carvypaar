@@ -95,7 +95,7 @@ function RegisterForm() {
       />
     <form onSubmit={onSubmit} noValidate className="space-y-5">
       {errors.form && (
-        <div role="alert" className="whitespace-pre-line rounded-xl border border-accent/40 bg-accent/10 px-4 py-3 text-sm text-accent">
+        <div role="alert" className="whitespace-pre-line rounded-xl border border-accent/40 bg-accent/10 px-4 py-3 text-sm text-ink">
           {errors.form}
         </div>
       )}
@@ -115,7 +115,7 @@ function RegisterForm() {
                 role === value ? "border-accent bg-accent/10 shadow-glow" : "border-line hover:border-accent/50",
               )}
             >
-              <Icon className={clsx("h-5 w-5", role === value ? "text-accent" : "text-muted")} aria-hidden />
+              <Icon className={clsx("h-5 w-5", role === value ? "text-ink" : "text-muted")} aria-hidden />
               <p className="mt-2 text-sm font-semibold">{label}</p>
               <p className="text-xs text-muted">{desc}</p>
             </button>
@@ -165,7 +165,7 @@ function RegisterForm() {
       </Button>
       <p className="text-center text-sm text-muted">
         Already have an account?{" "}
-        <Link href={`/login?next=${encodeURIComponent(next)}`} className="font-semibold text-accent hover:underline">
+        <Link href={`/login?next=${encodeURIComponent(next)}`} className="font-semibold text-ink hover:underline">
           Sign in
         </Link>
       </p>

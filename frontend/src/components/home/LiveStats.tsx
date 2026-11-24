@@ -26,15 +26,15 @@ export function LiveStats() {
   if (failed) return null;
 
   return (
-    <section id="stats" className="container-page relative z-10 -mt-8" aria-label="Marketplace stats">
-      <div className="glass grid grid-cols-2 gap-6 rounded-2xl p-6 sm:p-8 lg:grid-cols-4">
+    <section id="stats" className="container-page pt-12" aria-label="Marketplace stats">
+      <div className="grid grid-cols-2 gap-6 rounded-2xl bg-navy p-6 text-white sm:p-8 lg:grid-cols-4">
         {ITEMS.map(({ key, label }) => (
           <div key={key} className="text-center">
             {/* div, not p: the skeleton is a block element (a <div> inside <p> breaks hydration) */}
-            <div className="font-display text-3xl font-black text-accent sm:text-4xl">
+            <div className="font-display text-3xl font-extrabold text-accent sm:text-4xl">
               {stats ? <CountUp value={stats[key]} /> : <Skeleton className="mx-auto h-10 w-20" />}
             </div>
-            <p className="mt-1 text-xs font-semibold uppercase tracking-[0.2em] text-muted">{label}</p>
+            <p className="mt-1 text-xs font-semibold uppercase tracking-[0.2em] text-white/65">{label}</p>
           </div>
         ))}
       </div>

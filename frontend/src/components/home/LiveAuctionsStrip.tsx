@@ -21,12 +21,12 @@ export function LiveAuctionsStrip() {
     <section className="container-page pt-20" aria-labelledby="live-heading">
       <div className="flex flex-wrap items-end justify-between gap-4">
         <div>
-          <p className="flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.3em] text-accent">
+          <p className="flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.3em] text-ink">
             <span className="h-2 w-2 animate-ping rounded-full bg-accent" aria-hidden /> Live now
           </p>
-          <h2 id="live-heading" className="mt-3 font-display text-3xl font-black uppercase sm:text-4xl">Ending soon</h2>
+          <h2 id="live-heading" className="section-title mt-2">Ending soon</h2>
         </div>
-        <Link href="/auctions" className="text-sm font-semibold text-accent hover:underline">All auctions →</Link>
+        <Link href="/auctions" className="text-sm font-semibold text-ink hover:underline">All auctions →</Link>
       </div>
       <div className="mt-8 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
         {items === null

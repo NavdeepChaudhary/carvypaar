@@ -21,12 +21,12 @@ export function PhotoTile({
   disabled?: boolean;
 }) {
   const ctrl =
-    "grid h-8 w-8 place-items-center rounded-lg bg-black/60 text-white backdrop-blur transition hover:bg-accent disabled:opacity-30 disabled:hover:bg-black/60";
+    "grid h-8 w-8 place-items-center rounded-lg bg-black/60 text-on-accent backdrop-blur transition hover:bg-accent disabled:opacity-30 disabled:hover:bg-black/60";
   return (
     <li className="group relative aspect-[4/3] overflow-hidden rounded-xl border border-line">
       <CarImage src={src} alt={`Photo ${index + 1}`} className="h-full w-full" />
       {index === 0 && (
-        <span className="absolute left-2 top-2 flex items-center gap-1 rounded-full bg-accent px-2 py-0.5 text-[10px] font-bold uppercase text-white">
+        <span className="absolute left-2 top-2 flex items-center gap-1 rounded-full bg-accent px-2 py-0.5 text-[10px] font-bold uppercase text-on-accent">
           <Star className="h-3 w-3 fill-current" aria-hidden /> Cover
         </span>
       )}

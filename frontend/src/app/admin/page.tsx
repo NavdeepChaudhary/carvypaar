@@ -34,7 +34,7 @@ function Admin() {
 
   if (!ready) {
     return (
-      <div className="container-page space-y-6 pb-20 pt-28" aria-busy="true">
+      <div className="container-page space-y-6 pb-20 pt-10" aria-busy="true">
         <Skeleton className="h-12 w-64" />
         <Skeleton className="h-96 rounded-2xl" />
       </div>
@@ -42,16 +42,16 @@ function Admin() {
   }
 
   return (
-    <div className="container-page pb-20 pt-28">
-      <p className="text-xs font-semibold uppercase tracking-[0.3em] text-accent">Admin</p>
-      <h1 className="mt-2 font-display text-3xl font-black uppercase sm:text-4xl">Control room</h1>
+    <div className="container-page pb-20 pt-10">
+      <p className="text-xs font-semibold uppercase tracking-[0.3em] text-ink">Admin</p>
+      <h1 className="mt-2 font-display text-3xl font-extrabold uppercase sm:text-4xl">Control room</h1>
 
       <div className="mt-8 flex gap-1 overflow-x-auto border-b border-line" role="tablist" aria-label="Admin sections">
         {TABS.map(({ id, label, icon: Icon }) => (
           <button key={id} type="button" role="tab" id={`admin-tab-${id}`} aria-selected={tab === id} aria-controls={`admin-panel-${id}`}
             onClick={() => go(id)}
             className={clsx("relative flex shrink-0 items-center gap-2 px-4 py-3 text-sm font-semibold transition-colors",
-              tab === id ? "text-accent" : "text-muted hover:text-fg")}>
+              tab === id ? "text-ink" : "text-muted hover:text-fg")}>
             <Icon className="h-4 w-4" aria-hidden /> {label}
             {tab === id && <motion.span layoutId="admin-tab" className="absolute inset-x-0 -bottom-px h-0.5 bg-accent shadow-glow" />}
           </button>

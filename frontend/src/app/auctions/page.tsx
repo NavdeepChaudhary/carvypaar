@@ -60,13 +60,13 @@ function Auctions() {
   };
 
   return (
-    <div className="container-page pb-20 pt-28">
+    <div className="container-page pb-20 pt-10">
       <header className="relative overflow-hidden rounded-3xl border border-line/60 bg-gradient-to-br from-accent/20 via-surface to-neon/10 p-8 sm:p-12">
         <div className="absolute -right-10 -top-10 h-48 w-48 rounded-full bg-accent/30 blur-3xl" aria-hidden />
-        <p className="flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.3em] text-accent">
+        <p className="flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.3em] text-ink">
           <span className="h-2 w-2 animate-ping rounded-full bg-accent" aria-hidden /> Under the hammer
         </p>
-        <h1 className="mt-3 font-display text-3xl font-black uppercase sm:text-5xl">Live auctions</h1>
+        <h1 className="mt-3 font-display text-3xl font-extrabold uppercase sm:text-5xl">Live auctions</h1>
         <p className="mt-3 max-w-xl text-sm text-muted sm:text-base">
           Real-time bidding with live countdowns. Every bid in the last two minutes adds two more, so the highest bidder wins, not the fastest clicker.
         </p>
@@ -76,7 +76,7 @@ function Auctions() {
         {TABS.map(({ id, label, icon: Icon }) => (
           <button key={id} type="button" role="tab" aria-selected={tab === id} onClick={() => go({ tab: id })}
             className={clsx("relative flex shrink-0 items-center gap-2 rounded-xl px-4 py-2.5 text-sm font-semibold transition-colors",
-              tab === id ? "text-white" : "text-muted hover:text-fg")}>
+              tab === id ? "text-on-accent" : "text-muted hover:text-fg")}>
             {tab === id && <motion.span layoutId="auction-tab" className="absolute inset-0 rounded-xl bg-accent shadow-glow" />}
             <Icon className="relative h-4 w-4" aria-hidden /> <span className="relative">{label}</span>
           </button>

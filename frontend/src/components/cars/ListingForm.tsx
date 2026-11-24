@@ -274,7 +274,7 @@ export function ListingForm({ initial, submitLabel, extra, priceLabel, onPriceCh
                   <button
                     type="button"
                     onClick={() => set("features", form.features.filter((x) => x !== f))}
-                    className="flex items-center gap-1.5 rounded-full bg-accent/15 px-3 py-1.5 text-xs font-semibold text-accent hover:bg-accent hover:text-white"
+                    className="flex items-center gap-1.5 rounded-full bg-accent/15 px-3 py-1.5 text-xs font-semibold text-ink hover:bg-accent hover:text-on-accent"
                     aria-label={`Remove ${f}`}
                   >
                     {f} <X className="h-3 w-3" aria-hidden />
@@ -289,7 +289,7 @@ export function ListingForm({ initial, submitLabel, extra, priceLabel, onPriceCh
                 key={s}
                 type="button"
                 onClick={() => addFeature(s)}
-                className="rounded-full border border-line px-3 py-1.5 text-xs text-muted hover:border-accent hover:text-accent"
+                className="rounded-full border border-line px-3 py-1.5 text-xs text-muted hover:border-accent hover:text-ink"
               >
                 + {s}
               </button>

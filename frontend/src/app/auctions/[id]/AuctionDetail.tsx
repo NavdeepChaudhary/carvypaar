@@ -65,13 +65,13 @@ function LiveAuction({ initial }: { initial: AuctionDetail }) {
   };
 
   return (
-    <div className="container-page pb-20 pt-28">
+    <div className="container-page pb-20 pt-10">
       <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
-        <Link href="/auctions" className="inline-flex items-center gap-2 text-sm text-muted hover:text-accent">
+        <Link href="/auctions" className="inline-flex items-center gap-2 text-sm text-muted hover:text-ink">
           <ArrowLeft className="h-4 w-4" aria-hidden /> All auctions
         </Link>
         <span className={clsx("flex items-center gap-1.5 text-xs font-semibold",
-          connection === "open" ? "text-emerald-400" : "text-amber-400")} role="status">
+          connection === "open" ? "text-emerald-600 dark:text-emerald-400" : "text-amber-700 dark:text-amber-400")} role="status">
           {connection === "open" ? <Wifi className="h-3.5 w-3.5" aria-hidden /> : <WifiOff className="h-3.5 w-3.5" aria-hidden />}
           {connection === "open" ? "Live updates on" : connection === "closed" ? "Live updates unavailable" : "Reconnecting…"}
         </span>
@@ -81,9 +81,9 @@ function LiveAuction({ initial }: { initial: AuctionDetail }) {
         <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }}
           className={clsx("mb-6 flex items-center gap-4 rounded-2xl border p-5",
             iWon ? "border-emerald-500/50 bg-emerald-500/10" : "border-line bg-elevated/60")}>
-          {iWon ? <PartyPopper className="h-8 w-8 shrink-0 text-emerald-400" aria-hidden />
+          {iWon ? <PartyPopper className="h-8 w-8 shrink-0 text-emerald-600 dark:text-emerald-400" aria-hidden />
             : auction.status === "cancelled" ? <Ban className="h-8 w-8 shrink-0 text-muted" aria-hidden />
-            : <Gavel className="h-8 w-8 shrink-0 text-accent" aria-hidden />}
+            : <Gavel className="h-8 w-8 shrink-0 text-ink" aria-hidden />}
           <div>
             <p className="font-display text-lg font-bold uppercase">
               {auction.status === "cancelled" ? "Auction cancelled"
@@ -112,11 +112,11 @@ function LiveAuction({ initial }: { initial: AuctionDetail }) {
             <div className="neon-line absolute inset-x-6 top-0" aria-hidden />
             <div className="flex items-start justify-between gap-3">
               <div>
-                <p className="flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.2em] text-accent">
+                <p className="flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.2em] text-ink">
                   {live && <span className="h-2 w-2 animate-ping rounded-full bg-accent" aria-hidden />}
                   {live ? "Live auction" : upcoming ? "Upcoming auction" : "Auction"}
                 </p>
-                <h1 className="mt-2 font-display text-2xl font-black leading-tight">{car.title}</h1>
+                <h1 className="mt-2 font-display text-2xl font-extrabold leading-tight">{car.title}</h1>
               </div>
               <FavoriteButton listingId={car.id} initial={car.is_favorite} variant="solid" size="lg" className="shrink-0" />
             </div>
@@ -193,15 +193,15 @@ export default function AuctionPage() {
 
   if (error) {
     return (
-      <div className="container-page pb-20 pt-28">
+      <div className="container-page pb-20 pt-10">
         <EmptyState icon={Gavel} title="Auction not found" body="It may have been cancelled or removed."
-          action={<Link href="/auctions" className="rounded-xl bg-accent px-6 py-3 font-semibold text-white">See live auctions</Link>} />
+          action={<Link href="/auctions" className="rounded-xl bg-accent px-6 py-3 font-semibold text-on-accent">See live auctions</Link>} />
       </div>
     );
   }
   if (!detail) {
     return (
-      <div className="container-page grid gap-8 pb-20 pt-28 lg:grid-cols-[1fr_400px]" aria-busy="true" aria-label="Loading auction">
+      <div className="container-page grid gap-8 pb-20 pt-10 lg:grid-cols-[1fr_400px]" aria-busy="true" aria-label="Loading auction">
         <Skeleton className="aspect-[16/10] rounded-3xl" />
         <Skeleton className="h-[32rem] rounded-2xl" />
       </div>

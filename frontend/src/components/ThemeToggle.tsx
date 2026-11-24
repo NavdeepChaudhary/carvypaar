@@ -12,7 +12,7 @@ export function ThemeToggle() {
     <button
       type="button"
       onClick={toggleTheme}
-      className="relative grid h-10 w-10 place-items-center overflow-hidden rounded-xl border border-line text-fg transition-colors hover:border-accent hover:text-accent"
+      className="relative grid h-10 w-10 place-items-center overflow-hidden rounded-xl border border-line text-fg transition-colors hover:border-accent hover:text-ink"
       aria-label={isDark ? "Switch to light mode" : "Switch to dark mode"}
     >
       <AnimatePresence mode="wait" initial={false}>

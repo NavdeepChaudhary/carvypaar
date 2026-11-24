@@ -33,7 +33,7 @@ function Garage() {
 
   if (!ready || !user) {
     return (
-      <div className="container-page space-y-6 pb-20 pt-28" aria-busy="true">
+      <div className="container-page space-y-6 pb-20 pt-10" aria-busy="true">
         <Skeleton className="h-12 w-64" />
         <Skeleton className="h-12 w-full max-w-xl rounded-xl" />
         <Skeleton className="h-80 rounded-2xl" />
@@ -42,9 +42,9 @@ function Garage() {
   }
 
   return (
-    <div className="container-page pb-20 pt-28">
-      <p className="text-xs font-semibold uppercase tracking-[0.3em] text-accent">Dashboard</p>
-      <h1 className="mt-2 font-display text-3xl font-black uppercase sm:text-4xl">My garage</h1>
+    <div className="container-page pb-20 pt-10">
+      <p className="text-xs font-semibold uppercase tracking-[0.3em] text-ink">Dashboard</p>
+      <h1 className="mt-2 font-display text-3xl font-extrabold uppercase sm:text-4xl">My garage</h1>
 
       <div className="mt-8 flex gap-1 overflow-x-auto border-b border-line" role="tablist" aria-label="Garage sections">
         {TABS.map(({ id, label, icon: Icon }) => (
@@ -58,7 +58,7 @@ function Garage() {
             onClick={() => router.replace(`${pathname}?tab=${id}`, { scroll: false })}
             className={clsx(
               "relative flex shrink-0 items-center gap-2 px-4 py-3 text-sm font-semibold transition-colors",
-              tab === id ? "text-accent" : "text-muted hover:text-fg",
+              tab === id ? "text-ink" : "text-muted hover:text-fg",
             )}
           >
             <Icon className="h-4 w-4" aria-hidden /> {label}

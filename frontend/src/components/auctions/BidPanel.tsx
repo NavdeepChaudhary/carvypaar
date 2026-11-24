@@ -74,7 +74,7 @@ export function BidPanel({ auction, user, isSeller, myMaxBid, onBid }: BidPanelP
             animate={{ y: 0, opacity: 1, scale: 1 }}
             exit={{ y: -24, opacity: 0 }}
             transition={{ type: "spring", stiffness: 380, damping: 26 }}
-            className="font-display text-4xl font-black text-accent [text-shadow:0_0_24px_rgba(255,31,61,0.45)]"
+            className="font-display text-4xl font-extrabold text-ink"
             aria-live="polite"
           >
             {formatPrice(price)}
@@ -84,22 +84,22 @@ export function BidPanel({ auction, user, isSeller, myMaxBid, onBid }: BidPanelP
           <span className="flex items-center gap-1"><Gavel className="h-3.5 w-3.5" aria-hidden /> {auction.bid_count} bids</span>
           <span>Increment {formatPrice(auction.bid_increment)}</span>
           {auction.has_reserve && (
-            <span className={clsx("flex items-center gap-1 font-semibold", auction.reserve_met ? "text-emerald-400" : "text-amber-400")}>
+            <span className={clsx("flex items-center gap-1 font-semibold", auction.reserve_met ? "text-emerald-600 dark:text-emerald-400" : "text-amber-700 dark:text-amber-400")}>
               <ShieldCheck className="h-3.5 w-3.5" aria-hidden /> {auction.reserve_met ? "Reserve met" : "Reserve not met"}
             </span>
           )}
-          {!auction.has_reserve && <span className="font-semibold text-emerald-400">No reserve</span>}
+          {!auction.has_reserve && <span className="font-semibold text-emerald-600 dark:text-emerald-400">No reserve</span>}
         </div>
       </div>
 
       {leading && live && (
         <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }}
-          className="flex items-center gap-3 rounded-xl border border-emerald-500/40 bg-emerald-500/10 p-3 text-sm font-semibold text-emerald-400">
+          className="flex items-center gap-3 rounded-xl border border-emerald-500/40 bg-emerald-500/10 p-3 text-sm font-semibold text-emerald-600 dark:text-emerald-400">
           <Crown className="h-5 w-5" aria-hidden /> You&apos;re the highest bidder
         </motion.div>
       )}
       {!leading && myMaxBid !== null && live && (
-        <div className="rounded-xl border border-amber-500/40 bg-amber-500/10 p-3 text-sm font-semibold text-amber-400">
+        <div className="rounded-xl border border-amber-500/40 bg-amber-500/10 p-3 text-sm font-semibold text-amber-700 dark:text-amber-400">
           You&apos;ve been outbid (your max {formatPrice(myMaxBid)}). Bid again!
         </div>
       )}
@@ -110,7 +110,7 @@ export function BidPanel({ auction, user, isSeller, myMaxBid, onBid }: BidPanelP
         </p>
       ) : !user ? (
         <Link href={`/login?next=${encodeURIComponent(pathname)}`}
-          className="flex h-14 items-center justify-center gap-2 rounded-xl bg-accent font-semibold text-white hover:shadow-glow">
+          className="flex h-14 items-center justify-center gap-2 rounded-xl bg-accent font-semibold text-on-accent hover:shadow-glow">
           <Lock className="h-4 w-4" aria-hidden /> Sign in to bid
         </Link>
       ) : isSeller ? (
@@ -120,7 +120,7 @@ export function BidPanel({ auction, user, isSeller, myMaxBid, onBid }: BidPanelP
           <div className="grid grid-cols-3 gap-2" role="group" aria-label="Quick bids">
             {quick.map((q) => (
               <button key={q} type="button" disabled={submitting} onClick={() => void submit(q)}
-                className="rounded-xl border border-line px-2 py-2.5 text-xs font-bold transition-all hover:border-accent hover:bg-accent/10 hover:text-accent disabled:opacity-50">
+                className="rounded-xl border border-line px-2 py-2.5 text-xs font-bold transition-all hover:border-accent hover:bg-accent/10 hover:text-ink disabled:opacity-50">
                 {formatPrice(q)}
               </button>
             ))}
@@ -147,7 +147,7 @@ export function BidPanel({ auction, user, isSeller, myMaxBid, onBid }: BidPanelP
                 <Gavel className="h-5 w-5" aria-hidden /> Bid
               </Button>
             </div>
-            {error && <p id="bid-error" role="alert" className="mt-2 text-xs text-accent">{error}</p>}
+            {error && <p id="bid-error" role="alert" className="mt-2 text-xs text-ink">{error}</p>}
           </div>
           <p className="text-[11px] leading-relaxed text-muted">
             Bids are binding. A bid in the final 2 minutes extends the auction by 2 minutes, so no last-second sniping.

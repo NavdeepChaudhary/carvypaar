@@ -33,7 +33,7 @@ export function CarDetails({ car }: { car: ListingDetail }) {
               transition={{ delay: i * 0.04 }}
               className="rounded-xl border border-line/60 bg-elevated/40 p-4"
             >
-              <Icon className="h-5 w-5 text-accent" aria-hidden />
+              <Icon className="h-5 w-5 text-ink" aria-hidden />
               <dt className="mt-3 text-[11px] font-semibold uppercase tracking-[0.16em] text-muted">{label}</dt>
               <dd className="mt-1 truncate font-semibold" title={value}>{value}</dd>
             </motion.div>
@@ -54,7 +54,7 @@ export function CarDetails({ car }: { car: ListingDetail }) {
           <ul className="mt-4 grid gap-3 sm:grid-cols-2">
             {car.features.map((f) => (
               <li key={f} className="flex items-center gap-3 text-sm">
-                <span className="grid h-6 w-6 shrink-0 place-items-center rounded-full bg-accent/15 text-accent">
+                <span className="grid h-6 w-6 shrink-0 place-items-center rounded-full bg-accent/15 text-ink">
                   <Check className="h-3.5 w-3.5" aria-hidden />
                 </span>
                 {f}

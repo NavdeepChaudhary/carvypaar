@@ -42,7 +42,7 @@ export function Pagination({ page, pages, onChange }: { page: number; pages: num
             onClick={() => onChange(p)}
             aria-current={p === page ? "page" : undefined}
             aria-label={`Page ${p}`}
-            className={clsx(btn, p === page ? "border-accent bg-accent text-white shadow-glow" : "border-line hover:border-accent")}
+            className={clsx(btn, p === page ? "border-accent bg-accent text-on-accent shadow-glow" : "border-line hover:border-accent")}
           >
             {p}
           </button>

@@ -41,7 +41,7 @@ export default function SellPage() {
 
   if (!ready || !user) {
     return (
-      <div className="container-page space-y-6 pb-20 pt-28" aria-busy="true">
+      <div className="container-page space-y-6 pb-20 pt-10" aria-busy="true">
         <Skeleton className="h-12 w-72" />
         <Skeleton className="h-64 rounded-2xl" />
         <Skeleton className="h-64 rounded-2xl" />
@@ -62,7 +62,7 @@ export default function SellPage() {
       }
     };
     return (
-      <div className="container-page pb-20 pt-28">
+      <div className="container-page pb-20 pt-10">
         <EmptyState
           icon={KeyRound}
           title="Switch to a seller account"
@@ -133,9 +133,9 @@ export default function SellPage() {
   };
 
   return (
-    <div className="container-page max-w-4xl pb-20 pt-28">
-      <p className="text-xs font-semibold uppercase tracking-[0.3em] text-accent">Sell your car</p>
-      <h1 className="mt-2 font-display text-3xl font-black uppercase sm:text-4xl">Create a listing</h1>
+    <div className="container-page max-w-4xl pb-20 pt-10">
+      <p className="text-xs font-semibold uppercase tracking-[0.3em] text-ink">Sell your car</p>
+      <h1 className="mt-2 font-display text-3xl font-extrabold uppercase sm:text-4xl">Create a listing</h1>
       <p className="mt-2 text-sm text-muted">Great photos and an honest description sell cars faster.</p>
 
       <div className="mt-8 grid grid-cols-2 gap-3" role="radiogroup" aria-label="How do you want to sell?">
@@ -146,7 +146,7 @@ export default function SellPage() {
           <button key={id} type="button" role="radio" aria-checked={mode === id} onClick={() => setMode(id)}
             className={clsx("glass rounded-2xl p-5 text-left transition-all",
               mode === id ? "border-accent shadow-glow" : "hover:border-accent/50")}>
-            <Icon className={clsx("h-6 w-6", mode === id ? "text-accent" : "text-muted")} aria-hidden />
+            <Icon className={clsx("h-6 w-6", mode === id ? "text-ink" : "text-muted")} aria-hidden />
             <p className="mt-3 font-display font-bold uppercase tracking-wide">{title}</p>
             <p className="mt-1 text-xs text-muted">{body}</p>
           </button>

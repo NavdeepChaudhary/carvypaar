@@ -58,9 +58,9 @@ export function Countdown({
       {label && <span className="mb-1 text-[11px] font-semibold uppercase tracking-[0.2em] text-muted">{label}</span>}
       <div
         className={clsx(
-          "flex items-baseline gap-1 font-display font-black tabular-nums transition-colors",
-          t.done ? "text-muted" : urgent ? "animate-pulse text-accent [text-shadow:0_0_18px_rgba(255,31,61,0.8)]"
-            : "text-neon [text-shadow:0_0_14px_rgba(0,229,255,0.55)]",
+          "flex items-baseline gap-1 font-display font-extrabold tabular-nums transition-colors",
+          t.done ? "text-muted" : urgent ? "animate-pulse text-red-600 dark:text-red-400"
+            : "text-neon",
         )}
         aria-hidden
       >
@@ -83,7 +83,7 @@ export function Countdown({
             initial={{ opacity: 0, y: 8, scale: 0.8 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: -8 }}
-            className="absolute -right-2 -top-3 rounded-full bg-accent px-2 py-0.5 text-[10px] font-bold uppercase text-white shadow-glow"
+            className="absolute -right-2 -top-3 rounded-full bg-accent px-2 py-0.5 text-[10px] font-bold uppercase text-on-accent shadow-glow"
             role="status"
           >
             +2:00 extended

@@ -132,7 +132,7 @@ export function AuctionSettings({
             <button key={mode} type="button" role="radio" aria-checked={value.startMode === mode}
               onClick={() => onChange({ ...value, startMode: mode, startAt: value.startAt || localNowPlus(60) })}
               className={clsx("rounded-xl border p-3 text-left text-sm font-semibold transition-all",
-                value.startMode === mode ? "border-accent bg-accent/10 text-accent" : "border-line hover:border-accent/50")}>
+                value.startMode === mode ? "border-accent bg-accent/10 text-ink" : "border-line hover:border-accent/50")}>
               {mode === "now" ? "Start immediately" : "Schedule for later"}
             </button>
           ))}

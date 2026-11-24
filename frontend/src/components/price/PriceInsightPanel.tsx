@@ -28,7 +28,7 @@ export function PriceInsightPanel({ insight, askingPrice, isAuction }: { insight
           <h2 id="ai-price-heading" className="flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.2em] text-neon">
             <Sparkles className="h-3.5 w-3.5" aria-hidden /> AI price check
           </h2>
-          <p className="mt-2 font-display text-2xl font-black">{formatPrice(insight.estimated_price)}</p>
+          <p className="mt-2 font-display text-2xl font-extrabold">{formatPrice(insight.estimated_price)}</p>
           <p className="text-xs text-muted">
             Likely {formatPriceShort(insight.low)} – {formatPriceShort(insight.high)} · {CONFIDENCE_LABEL[insight.confidence]}
           </p>
@@ -47,13 +47,13 @@ export function PriceInsightPanel({ insight, askingPrice, isAuction }: { insight
           </div>
           <div className="mt-2 flex justify-between text-[11px] text-muted">
             <span>Fair range</span>
-            <span className="text-amber-400">▲ Asking {formatPriceShort(askingPrice)}</span>
+            <span className="text-amber-700 dark:text-amber-400">▲ Asking {formatPriceShort(askingPrice)}</span>
           </div>
         </div>
       )}
       {!isAuction && insight.delta_pct !== null && (
         <p className={clsx("mt-3 text-sm font-semibold",
-          insight.rating === "great_deal" ? "text-emerald-400" : insight.rating === "overpriced" ? "text-amber-400" : "text-fg/80")}>
+          insight.rating === "great_deal" ? "text-emerald-600 dark:text-emerald-400" : insight.rating === "overpriced" ? "text-amber-700 dark:text-amber-400" : "text-fg/80")}>
           Asking price is {Math.abs(insight.delta_pct).toFixed(0)}% {insight.delta_pct < 0 ? "below" : "above"} our estimate.
         </p>
       )}
@@ -68,7 +68,7 @@ export function PriceInsightPanel({ insight, askingPrice, isAuction }: { insight
 
       <p className="mt-4 text-[11px] text-muted">
         Estimates come from a machine-learning model and aren&apos;t a valuation guarantee.{" "}
-        <Link href="/price-check" className="text-accent hover:underline">Value your own car →</Link>
+        <Link href="/price-check" className="text-ink hover:underline">Value your own car →</Link>
       </p>
     </section>
   );

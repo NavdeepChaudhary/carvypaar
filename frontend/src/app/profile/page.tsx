@@ -17,7 +17,7 @@ import { passwordError, phoneError } from "@/lib/validation";
 
 function ProfileSkeleton() {
   return (
-    <div className="container-page grid gap-6 pb-20 pt-28 lg:grid-cols-3" aria-busy="true" aria-label="Loading profile">
+    <div className="container-page grid gap-6 pb-20 pt-10 lg:grid-cols-3" aria-busy="true" aria-label="Loading profile">
       <Skeleton className="h-80 rounded-2xl" />
       <div className="space-y-6 lg:col-span-2">
         <Skeleton className="h-96 rounded-2xl" />
@@ -38,11 +38,11 @@ function ProfileCard({ user }: { user: User }) {
 
   return (
     <motion.aside initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} className="glass h-fit rounded-2xl p-6">
-      <div className="grid h-20 w-20 place-items-center rounded-2xl bg-gradient-to-br from-accent to-accent-deep font-display text-2xl font-black text-white shadow-glow">
+      <div className="grid h-20 w-20 place-items-center rounded-2xl bg-gradient-to-br from-accent to-accent-deep font-display text-2xl font-extrabold text-on-accent shadow-glow">
         {initials}
       </div>
       <h1 className="mt-4 font-display text-xl font-bold">{user.full_name}</h1>
-      <span className="mt-2 inline-flex items-center gap-1 rounded-full bg-accent/10 px-3 py-1 text-xs font-semibold uppercase tracking-wider text-accent">
+      <span className="mt-2 inline-flex items-center gap-1 rounded-full bg-accent/10 px-3 py-1 text-xs font-semibold uppercase tracking-wider text-ink">
         <ShieldCheck className="h-3.5 w-3.5" aria-hidden /> {user.role}
       </span>
       <dl className="mt-6 space-y-3 text-sm">
@@ -204,7 +204,7 @@ export default function ProfilePage() {
   if (loading || !user) return <ProfileSkeleton />;
 
   return (
-    <div className="container-page grid gap-6 pb-20 pt-28 lg:grid-cols-3">
+    <div className="container-page grid gap-6 pb-20 pt-10 lg:grid-cols-3">
       <ProfileCard user={user} />
       <div className="space-y-6 lg:col-span-2">
         {/* key resets the form when the saved profile changes */}

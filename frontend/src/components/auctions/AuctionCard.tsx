@@ -40,7 +40,7 @@ export function AuctionCard({ data, index = 0 }: { data: AuctionCardData; index?
           <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/10 to-transparent" aria-hidden />
           <span className={clsx(
             "absolute left-3 top-3 flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[11px] font-bold uppercase tracking-wider",
-            live ? "bg-accent text-white" : upcoming ? "bg-neon/20 text-neon backdrop-blur" : "bg-black/60 text-white/80 backdrop-blur",
+            live ? "bg-accent text-on-accent" : upcoming ? "bg-neon/20 text-neon backdrop-blur" : "bg-black/60 text-on-accent/80 backdrop-blur",
           )}>
             {live && <span className="h-1.5 w-1.5 animate-ping rounded-full bg-white" aria-hidden />}
             {live ? "Live" : upcoming ? "Upcoming" : auction.winner_id ? "Sold" : "Ended"}
@@ -61,14 +61,14 @@ export function AuctionCard({ data, index = 0 }: { data: AuctionCardData; index?
           </div>
         </div>
         <div className="p-4">
-          <p className="text-xs font-semibold uppercase tracking-[0.18em] text-accent">{listing.year} · {listing.make}</p>
+          <p className="text-xs font-semibold uppercase tracking-[0.18em] text-ink">{listing.year} · {listing.make}</p>
           <h3 className="mt-1 line-clamp-1 font-semibold" title={listing.title}>{listing.title}</h3>
           <div className="mt-4 flex items-end justify-between gap-2">
             <div>
               <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-muted">
                 {ended ? (auction.final_price ? "Sold for" : "High bid") : auction.current_price ? "Current bid" : "Starting bid"}
               </p>
-              <p className="font-display text-xl font-black">
+              <p className="font-display text-xl font-extrabold">
                 {formatPrice(auction.final_price ?? auction.current_price ?? auction.starting_price)}
               </p>
             </div>

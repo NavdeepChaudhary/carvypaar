@@ -13,8 +13,8 @@ export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
 
 const variants: Record<Variant, string> = {
   primary:
-    "bg-accent text-white hover:bg-accent-soft hover:shadow-glow active:bg-accent-deep disabled:hover:shadow-none",
-  outline: "border border-line bg-transparent text-fg hover:border-accent hover:text-accent",
+    "bg-accent text-on-accent hover:bg-accent-soft hover:shadow-glow active:bg-accent-deep disabled:hover:shadow-none",
+  outline: "border border-line bg-surface text-fg hover:border-accent hover:text-ink",
   ghost: "bg-transparent text-fg hover:bg-elevated",
 };
 

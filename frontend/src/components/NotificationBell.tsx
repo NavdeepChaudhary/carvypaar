@@ -118,11 +118,11 @@ export function NotificationBell() {
         aria-label={`Notifications${unread ? `, ${unread} unread` : ""}`}
         aria-expanded={open}
         aria-haspopup="true"
-        className="relative grid h-10 w-10 place-items-center rounded-xl border border-line hover:border-accent hover:text-accent"
+        className="relative grid h-10 w-10 place-items-center rounded-xl border border-line hover:border-accent hover:text-ink"
       >
         <Bell className="h-4 w-4" />
         {unread > 0 && (
-          <span className="absolute -right-1.5 -top-1.5 grid h-5 min-w-5 place-items-center rounded-full bg-accent px-1 text-[10px] font-bold text-white shadow-glow">
+          <span className="absolute -right-1.5 -top-1.5 grid h-5 min-w-5 place-items-center rounded-full bg-accent px-1 text-[10px] font-bold text-on-accent shadow-glow">
             {unread > 99 ? "99+" : unread}
           </span>
         )}
@@ -139,7 +139,7 @@ export function NotificationBell() {
             <div className="flex items-center justify-between border-b border-line/60 px-4 py-3">
               <p className="font-display text-sm font-bold uppercase tracking-wide">Notifications</p>
               {unread > 0 && (
-                <button type="button" onClick={markAll} className="flex items-center gap-1 text-xs font-semibold text-accent hover:underline">
+                <button type="button" onClick={markAll} className="flex items-center gap-1 text-xs font-semibold text-ink hover:underline">
                   <CheckCheck className="h-3.5 w-3.5" aria-hidden /> Mark all read
                 </button>
               )}
@@ -155,7 +155,7 @@ export function NotificationBell() {
                       <button type="button" onClick={() => go(n)}
                         className={clsx("flex w-full gap-3 px-4 py-3 text-left transition-colors hover:bg-elevated", !n.is_read && "bg-accent/5")}>
                         <span className={clsx("mt-0.5 grid h-8 w-8 shrink-0 place-items-center rounded-full",
-                          n.type === "auction_won" ? "bg-emerald-500/15 text-emerald-400" : "bg-accent/10 text-accent")}>
+                          n.type === "auction_won" ? "bg-emerald-500/15 text-emerald-600 dark:text-emerald-400" : "bg-accent/10 text-ink")}>
                           <Icon className="h-4 w-4" aria-hidden />
                         </span>
                         <span className="min-w-0 flex-1">

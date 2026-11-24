@@ -50,11 +50,11 @@ export const SORT_OPTIONS: Option[] = [
 ];
 
 export const STATUS_STYLES: Record<ListingStatus, { label: string; className: string }> = {
-  active: { label: "Live", className: "bg-emerald-500/15 text-emerald-400" },
-  pending: { label: "In review", className: "bg-amber-500/15 text-amber-400" },
+  active: { label: "Live", className: "bg-emerald-500/15 text-emerald-600 dark:text-emerald-400" },
+  pending: { label: "In review", className: "bg-amber-500/15 text-amber-700 dark:text-amber-400" },
   sold: { label: "Sold", className: "bg-neon/15 text-neon" },
   inactive: { label: "Hidden", className: "bg-muted/15 text-muted" },
-  rejected: { label: "Rejected", className: "bg-accent/15 text-accent" },
+  rejected: { label: "Rejected", className: "bg-accent/15 text-ink" },
 };
 
 export const MAX_PHOTOS = 10;

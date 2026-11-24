@@ -38,7 +38,7 @@ import type { ListingDetail } from "@/lib/types";
 
 function DetailSkeleton() {
   return (
-    <div className="container-page grid gap-8 pb-20 pt-28 lg:grid-cols-[1fr_380px]" aria-busy="true" aria-label="Loading car">
+    <div className="container-page grid gap-8 pb-20 pt-10 lg:grid-cols-[1fr_380px]" aria-busy="true" aria-label="Loading car">
       <div className="space-y-4">
         <Skeleton className="aspect-[16/10] rounded-3xl" />
         <div className="flex gap-2">{Array.from({ length: 4 }, (_, i) => <Skeleton key={i} className="h-20 w-28 rounded-xl" />)}</div>
@@ -87,12 +87,12 @@ export default function CarDetailPage() {
 
   if (error) {
     return (
-      <div className="container-page pb-20 pt-28">
+      <div className="container-page pb-20 pt-10">
         <EmptyState
           icon={Car}
           title={error.status === 404 ? "This car has left the lot" : "Something went wrong"}
           body={error.status === 404 ? "It may have been sold or removed by the seller." : error.message}
-          action={<Link href="/cars" className="rounded-xl bg-accent px-6 py-3 font-semibold text-white">Browse cars</Link>}
+          action={<Link href="/cars" className="rounded-xl bg-accent px-6 py-3 font-semibold text-on-accent">Browse cars</Link>}
         />
       </div>
     );
@@ -108,8 +108,8 @@ export default function CarDetailPage() {
   const canBuy = car.status === "active" && !car.is_owner;
 
   return (
-    <div className="container-page pb-20 pt-28">
-      <Link href="/cars" className="mb-6 inline-flex items-center gap-2 text-sm text-muted hover:text-accent">
+    <div className="container-page pb-20 pt-10">
+      <Link href="/cars" className="mb-6 inline-flex items-center gap-2 text-sm text-muted hover:text-ink">
         <ArrowLeft className="h-4 w-4" aria-hidden /> Back to all cars
       </Link>
 
@@ -117,7 +117,7 @@ export default function CarDetailPage() {
         <div className="min-w-0 space-y-8">
           {car.is_owner && (car.status === "pending" || car.status === "rejected") && (
             <div role="status" className={clsx("rounded-2xl border p-4 text-sm",
-              car.status === "pending" ? "border-amber-500/40 bg-amber-500/10 text-amber-300" : "border-accent/40 bg-accent/10 text-accent")}>
+              car.status === "pending" ? "border-amber-500/40 bg-amber-500/10 text-amber-700 dark:text-amber-400" : "border-accent/40 bg-accent/10 text-ink")}>
               {car.status === "pending"
                 ? "In review: only you can see this listing until an admin approves it. You'll get a notification."
                 : "This listing was rejected. Check your notifications for the reason, then edit it to resubmit."}
@@ -128,7 +128,7 @@ export default function CarDetailPage() {
               {([["photos", "Photos"], ["spin", "360° view"]] as const).map(([id, label]) => (
                 <button key={id} type="button" role="tab" aria-selected={view === id} onClick={() => setView(id)}
                   className={clsx("rounded-lg px-4 py-1.5 text-xs font-semibold transition-colors",
-                    view === id ? "bg-accent text-white" : "text-muted hover:text-fg")}>
+                    view === id ? "bg-accent text-on-accent" : "text-muted hover:text-fg")}>
                   {label}
                 </button>
               ))}
@@ -146,8 +146,8 @@ export default function CarDetailPage() {
             <div className="neon-line absolute inset-x-6 top-0" aria-hidden />
             <div className="flex items-start justify-between gap-3">
               <div>
-                <p className="text-xs font-semibold uppercase tracking-[0.2em] text-accent">{car.year} · {car.make}</p>
-                <h1 className="mt-2 font-display text-2xl font-black leading-tight">{car.title}</h1>
+                <p className="text-xs font-semibold uppercase tracking-[0.2em] text-ink">{car.year} · {car.make}</p>
+                <h1 className="mt-2 font-display text-2xl font-extrabold leading-tight">{car.title}</h1>
               </div>
               <FavoriteButton
                 listingId={car.id}
@@ -163,7 +163,7 @@ export default function CarDetailPage() {
                 {status.label}
               </span>
             )}
-            <p className="mt-5 font-display text-4xl font-black text-accent">{formatPrice(car.price)}</p>
+            <p className="mt-5 font-display text-4xl font-extrabold text-ink">{formatPrice(car.price)}</p>
             {car.price_insight?.rating && (
               <div className="mt-2">
                 <PriceBadge rating={car.price_insight.rating} estimate={car.price_insight.estimated_price} size="md" />
@@ -180,7 +180,7 @@ export default function CarDetailPage() {
               {car.is_owner ? (
                 <Link
                   href={`/cars/${car.id}/edit`}
-                  className="flex h-14 w-full items-center justify-center gap-2 rounded-xl bg-accent font-semibold text-white hover:shadow-glow"
+                  className="flex h-14 w-full items-center justify-center gap-2 rounded-xl bg-accent font-semibold text-on-accent hover:shadow-glow"
                 >
                   <Pencil className="h-4 w-4" aria-hidden /> Edit listing
                 </Link>
@@ -204,7 +204,7 @@ export default function CarDetailPage() {
           <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.08 }} className="glass rounded-2xl p-6">
             <h2 className="text-xs font-semibold uppercase tracking-[0.2em] text-muted">Seller</h2>
             <div className="mt-4 flex items-center gap-4">
-              <div className="grid h-14 w-14 place-items-center rounded-2xl bg-gradient-to-br from-accent to-accent-deep font-display text-lg font-black text-white">
+              <div className="grid h-14 w-14 place-items-center rounded-2xl bg-gradient-to-br from-accent to-accent-deep font-display text-lg font-extrabold text-on-accent">
                 {car.seller.full_name.split(" ").map((p) => p[0]).slice(0, 2).join("").toUpperCase()}
               </div>
               <div className="min-w-0">
@@ -217,11 +217,11 @@ export default function CarDetailPage() {
                 )}
               </div>
             </div>
-            <Link href={`/cars?seller_id=${car.seller.id}`} className="mt-4 block text-sm font-semibold text-accent hover:underline">
+            <Link href={`/cars?seller_id=${car.seller.id}`} className="mt-4 block text-sm font-semibold text-ink hover:underline">
               More cars from this seller →
             </Link>
             <p className="mt-4 flex items-start gap-2 rounded-xl bg-elevated/60 p-3 text-xs text-muted">
-              <ShieldCheck className="mt-0.5 h-4 w-4 shrink-0 text-accent" aria-hidden />
+              <ShieldCheck className="mt-0.5 h-4 w-4 shrink-0 text-ink" aria-hidden />
               Never pay before seeing the car in person. Keep conversations on CarvyPaar.
             </p>
           </motion.div>

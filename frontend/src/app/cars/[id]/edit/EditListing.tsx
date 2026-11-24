@@ -36,16 +36,16 @@ export default function EditListingPage() {
 
   if (error) {
     return (
-      <div className="container-page pb-20 pt-28">
+      <div className="container-page pb-20 pt-10">
         <EmptyState icon={Car} title="Can't edit this listing" body={error}
-          action={<Link href="/garage" className="rounded-xl bg-accent px-6 py-3 font-semibold text-white">Go to my garage</Link>} />
+          action={<Link href="/garage" className="rounded-xl bg-accent px-6 py-3 font-semibold text-on-accent">Go to my garage</Link>} />
       </div>
     );
   }
 
   if (!car) {
     return (
-      <div className="container-page max-w-4xl space-y-6 pb-20 pt-28" aria-busy="true">
+      <div className="container-page max-w-4xl space-y-6 pb-20 pt-10" aria-busy="true">
         <Skeleton className="h-12 w-72" />
         <Skeleton className="h-48 rounded-2xl" />
         <Skeleton className="h-72 rounded-2xl" />
@@ -64,11 +64,11 @@ export default function EditListingPage() {
   };
 
   return (
-    <div className="container-page max-w-4xl pb-20 pt-28">
-      <Link href={`/cars/${car.id}`} className="mb-6 inline-flex items-center gap-2 text-sm text-muted hover:text-accent">
+    <div className="container-page max-w-4xl pb-20 pt-10">
+      <Link href={`/cars/${car.id}`} className="mb-6 inline-flex items-center gap-2 text-sm text-muted hover:text-ink">
         <ArrowLeft className="h-4 w-4" aria-hidden /> Back to listing
       </Link>
-      <h1 className="font-display text-3xl font-black uppercase sm:text-4xl">Edit listing</h1>
+      <h1 className="font-display text-3xl font-extrabold uppercase sm:text-4xl">Edit listing</h1>
 
       <section className="glass mt-8 space-y-5 rounded-2xl p-6" aria-labelledby="photos-heading">
         <div>

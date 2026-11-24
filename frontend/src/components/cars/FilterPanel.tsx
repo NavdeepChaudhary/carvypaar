@@ -103,7 +103,7 @@ export function FilterPanel({ values, makes, onChange, onReset }: FilterPanelPro
       <button
         type="button"
         onClick={onReset}
-        className="w-full rounded-xl border border-line py-3 text-sm font-semibold transition-colors hover:border-accent hover:text-accent"
+        className="w-full rounded-xl border border-line py-3 text-sm font-semibold transition-colors hover:border-accent hover:text-ink"
       >
         Reset all filters
       </button>

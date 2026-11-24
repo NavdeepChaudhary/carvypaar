@@ -52,7 +52,7 @@ export function CarCard({ car, index = 0, showStatus, onFavoriteChange, footer }
               <PriceBadge rating={car.price_rating} estimate={car.estimated_price} />
             )}
             {car.listing_type === "auction" && (
-              <span className="rounded-full bg-accent px-2.5 py-1 text-[11px] font-bold uppercase tracking-wider text-white">
+              <span className="rounded-full bg-accent px-2.5 py-1 text-[11px] font-bold uppercase tracking-wider text-on-accent">
                 Auction
               </span>
             )}
@@ -60,13 +60,13 @@ export function CarCard({ car, index = 0, showStatus, onFavoriteChange, footer }
           <span className="absolute bottom-3 left-3 flex items-center gap-1 rounded-full bg-black/50 px-2 py-1 text-[11px] text-white/90 backdrop-blur">
             <Camera className="h-3 w-3" aria-hidden /> {car.image_count}
           </span>
-          <p className="absolute bottom-3 right-3 font-display text-lg font-black text-white drop-shadow">
+          <p className="absolute bottom-3 right-3 font-display text-lg font-extrabold text-white drop-shadow">
             {formatPrice(car.price)}
           </p>
         </div>
 
         <div className="flex flex-1 flex-col p-4">
-          <p className="text-xs font-semibold uppercase tracking-[0.18em] text-accent">{car.year} · {car.make}</p>
+          <p className="text-xs font-semibold uppercase tracking-[0.18em] text-ink">{car.year} · {car.make}</p>
           <h3 className="mt-1 line-clamp-1 text-base font-semibold" title={car.title}>
             {car.title}
           </h3>

@@ -61,17 +61,17 @@ export function MyListingsTab({ canSell }: { canSell: boolean }) {
         icon={CarFront}
         title="No listings yet"
         body={canSell ? "List your first car in a few minutes." : "Enable selling to list your first car."}
-        action={<Link href="/sell" className="rounded-xl bg-accent px-6 py-3 font-semibold text-white hover:shadow-glow">Sell a car</Link>}
+        action={<Link href="/sell" className="rounded-xl bg-accent px-6 py-3 font-semibold text-on-accent hover:shadow-glow">Sell a car</Link>}
       />
     );
   }
 
-  const action = "flex h-9 items-center gap-1.5 rounded-lg border border-line px-3 text-xs font-semibold transition-colors hover:border-accent hover:text-accent disabled:opacity-50";
+  const action = "flex h-9 items-center gap-1.5 rounded-lg border border-line px-3 text-xs font-semibold transition-colors hover:border-accent hover:text-ink disabled:opacity-50";
 
   return (
     <>
       <div className="mb-5 flex justify-end">
-        <Link href="/sell" className="flex h-10 items-center gap-2 rounded-xl bg-accent px-4 text-sm font-semibold text-white hover:shadow-glow">
+        <Link href="/sell" className="flex h-10 items-center gap-2 rounded-xl bg-accent px-4 text-sm font-semibold text-on-accent hover:shadow-glow">
           <Plus className="h-4 w-4" aria-hidden /> New listing
         </Link>
       </div>
@@ -100,7 +100,7 @@ export function MyListingsTab({ canSell }: { canSell: boolean }) {
                     <Eye className="h-3.5 w-3.5" aria-hidden /> Relist
                   </button>
                 )}
-                <button type="button" className={`${action} hover:!border-accent hover:!text-accent`} disabled={busyId === car.id}
+                <button type="button" className={`${action} hover:!border-accent hover:!text-ink`} disabled={busyId === car.id}
                   onClick={() => setConfirmDelete(car)} aria-label={`Delete ${car.title}`}>
                   <Trash2 className="h-3.5 w-3.5" aria-hidden />
                 </button>

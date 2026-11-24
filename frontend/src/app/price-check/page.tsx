@@ -25,9 +25,9 @@ const EMPTY: Form = {
   make: "", model: "", year: "", mileage: "", fuel_type: "", transmission: "", body_type: "", condition: "", location: "", asking_price: "",
 };
 const CONFIDENCE = {
-  high: { label: "High confidence", className: "text-emerald-400" },
-  medium: { label: "Medium confidence", className: "text-amber-400" },
-  low: { label: "Low confidence", className: "text-accent" },
+  high: { label: "High confidence", className: "text-emerald-600 dark:text-emerald-400" },
+  medium: { label: "Medium confidence", className: "text-amber-700 dark:text-amber-400" },
+  low: { label: "Low confidence", className: "text-ink" },
 } as const;
 
 function validate(f: Form): Partial<Record<keyof Form, string>> {
@@ -95,20 +95,20 @@ export default function PriceCheckPage() {
   const metrics = info?.metrics;
 
   return (
-    <div className="container-page pb-20 pt-28">
+    <div className="container-page pb-20 pt-10">
       <header className="relative overflow-hidden rounded-3xl border border-line/60 bg-gradient-to-br from-neon/15 via-surface to-accent/15 p-8 sm:p-12">
         <div className="absolute -left-12 -top-12 h-56 w-56 rounded-full bg-neon/20 blur-3xl" aria-hidden />
         <p className="relative flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.3em] text-neon">
           <Sparkles className="h-4 w-4" aria-hidden /> AI price predictor
         </p>
-        <h1 className="relative mt-3 font-display text-3xl font-black uppercase sm:text-5xl">What&apos;s my car worth?</h1>
+        <h1 className="relative mt-3 font-display text-3xl font-extrabold uppercase sm:text-5xl">What&apos;s my car worth?</h1>
         <p className="relative mt-3 max-w-xl text-sm text-muted sm:text-base">
           Get an instant market estimate with a realistic price range, and see exactly what pushes your car&apos;s value up or down.
         </p>
       </header>
 
       {info && !info.available && (
-        <div role="alert" className="mt-6 flex items-start gap-3 rounded-2xl border border-amber-500/40 bg-amber-500/10 p-4 text-sm text-amber-300">
+        <div role="alert" className="mt-6 flex items-start gap-3 rounded-2xl border border-amber-500/40 bg-amber-500/10 p-4 text-sm text-amber-700 dark:text-amber-400">
           <AlertTriangle className="mt-0.5 h-5 w-5 shrink-0" aria-hidden />
           {STATIC_DEMO ? DEMO_MESSAGE : (
             <>The price model isn&apos;t trained yet. Run <code className="rounded bg-black/30 px-1.5">python ml/scripts/train.py</code> and refresh.</>
@@ -151,7 +151,7 @@ export default function PriceCheckPage() {
                     <span className="text-muted">· {Math.round(result.interval * 100)}% of similar cars sell in this range</span>
                   </div>
                   {result.unseen.length > 0 && (
-                    <p className="mt-3 flex items-start gap-2 rounded-xl bg-amber-500/10 p-3 text-xs text-amber-300">
+                    <p className="mt-3 flex items-start gap-2 rounded-xl bg-amber-500/10 p-3 text-xs text-amber-700 dark:text-amber-400">
                       <Info className="mt-0.5 h-4 w-4 shrink-0" aria-hidden />
                       Our model hasn&apos;t seen this {result.unseen.join(" / ")} before, so treat this estimate as a rough guide.
                     </p>
@@ -171,7 +171,7 @@ export default function PriceCheckPage() {
                   <h2 className="mb-4 font-display text-sm font-bold uppercase tracking-wide">What drives this price</h2>
                   <FactorList factors={result.factors} />
                 </div>
-                <Link href="/sell" className="block rounded-2xl border border-accent/40 bg-accent/10 p-5 text-center font-semibold text-accent hover:bg-accent hover:text-white">
+                <Link href="/sell" className="block rounded-2xl border border-accent/40 bg-accent/10 p-5 text-center font-semibold text-ink hover:bg-accent hover:text-on-accent">
                   Ready to sell? List it at {formatPrice(result.estimated_price)} →
                 </Link>
               </motion.div>

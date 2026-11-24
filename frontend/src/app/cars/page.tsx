@@ -134,11 +134,11 @@ function BrowseCars() {
   );
 
   return (
-    <div className="container-page pb-20 pt-28">
+    <div className="container-page pb-20 pt-10">
       <header className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
         <div>
-          <p className="text-xs font-semibold uppercase tracking-[0.3em] text-accent">Marketplace</p>
-          <h1 className="mt-2 font-display text-3xl font-black uppercase sm:text-4xl">Find your next car</h1>
+          <p className="text-xs font-semibold uppercase tracking-[0.3em] text-ink">Marketplace</p>
+          <h1 className="mt-2 font-display text-3xl font-extrabold uppercase sm:text-4xl">Find your next car</h1>
           <p className="mt-2 text-sm text-muted" aria-live="polite">
             {loading && !data ? "Searching…" : `${formatNumber(data?.total ?? 0)} cars available`}
           </p>
@@ -168,7 +168,7 @@ function BrowseCars() {
         >
           <SlidersHorizontal className="h-4 w-4" aria-hidden /> Filters
           {activeChips.length > 0 && (
-            <span className="grid h-5 min-w-5 place-items-center rounded-full bg-accent px-1 text-[11px] text-white">
+            <span className="grid h-5 min-w-5 place-items-center rounded-full bg-accent px-1 text-[11px] text-on-accent">
               {activeChips.length}
             </span>
           )}
@@ -179,7 +179,7 @@ function BrowseCars() {
               <button
                 type="button"
                 onClick={() => updateParams(k === "make" ? { make: undefined, model: undefined } : { [k]: undefined })}
-                className="flex items-center gap-1.5 rounded-full border border-accent/40 bg-accent/10 px-3 py-1.5 text-xs font-semibold text-accent hover:bg-accent hover:text-white"
+                className="flex items-center gap-1.5 rounded-full border border-accent/40 bg-accent/10 px-3 py-1.5 text-xs font-semibold text-ink hover:bg-accent hover:text-on-accent"
                 aria-label={`Remove filter ${chipLabel(k, values[k]!)}`}
               >
                 {chipLabel(k, values[k]!)} <X className="h-3 w-3" aria-hidden />

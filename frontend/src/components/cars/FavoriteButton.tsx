@@ -71,10 +71,10 @@ export function FavoriteButton({
         "grid place-items-center rounded-full border backdrop-blur-md transition-colors",
         size === "lg" ? "h-12 w-12" : "h-10 w-10",
         fav
-          ? "border-accent bg-accent text-white shadow-glow"
+          ? "border-accent bg-accent text-on-accent shadow-glow"
           : variant === "overlay"
             ? "border-white/20 bg-black/40 text-white hover:border-accent"
-            : "border-line bg-elevated text-fg hover:border-accent hover:text-accent",
+            : "border-line bg-elevated text-fg hover:border-accent hover:text-ink",
         className,
       )}
     >

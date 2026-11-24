@@ -25,7 +25,7 @@ export function FavoritesTab() {
         icon={Heart}
         title="No saved cars"
         body="Tap the heart on any car to keep it here."
-        action={<Link href="/cars" className="rounded-xl bg-accent px-6 py-3 font-semibold text-white hover:shadow-glow">Browse cars</Link>}
+        action={<Link href="/cars" className="rounded-xl bg-accent px-6 py-3 font-semibold text-on-accent hover:shadow-glow">Browse cars</Link>}
       />
     );
   }

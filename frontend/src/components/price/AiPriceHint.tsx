@@ -60,7 +60,7 @@ export function AiPriceHint({
         AI suggests <strong className="text-fg">{formatPrice(result.estimated_price)}</strong>{" "}
         ({formatPriceShort(result.low)} – {formatPriceShort(result.high)})
       </span>
-      <button type="button" onClick={() => onUse(result.estimated_price)} className="font-semibold text-accent hover:underline">
+      <button type="button" onClick={() => onUse(result.estimated_price)} className="font-semibold text-ink hover:underline">
         Use this price
       </button>
     </span>

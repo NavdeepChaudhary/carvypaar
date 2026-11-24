@@ -16,9 +16,9 @@ import { offersApi } from "@/lib/listings";
 import type { Offer, OfferStatus } from "@/lib/types";
 
 const STATUS: Record<OfferStatus, string> = {
-  pending: "bg-amber-500/15 text-amber-400",
-  accepted: "bg-emerald-500/15 text-emerald-400",
-  rejected: "bg-accent/15 text-accent",
+  pending: "bg-amber-500/15 text-amber-700 dark:text-amber-400",
+  accepted: "bg-emerald-500/15 text-emerald-600 dark:text-emerald-400",
+  rejected: "bg-accent/15 text-ink",
   withdrawn: "bg-muted/15 text-muted",
 };
 
@@ -51,7 +51,7 @@ export function OffersTab() {
         {(["received", "sent"] as const).map((b) => (
           <button key={b} type="button" role="tab" aria-selected={box === b} onClick={() => setBox(b)}
             className={clsx("rounded-lg px-4 py-2 text-sm font-semibold capitalize transition-colors",
-              box === b ? "bg-accent text-white" : "text-muted hover:text-fg")}>
+              box === b ? "bg-accent text-on-accent" : "text-muted hover:text-fg")}>
             {b}
           </button>
         ))}
@@ -71,7 +71,7 @@ export function OffersTab() {
                 <Link href={`/cars/${o.listing_id}`} className="flex min-w-0 flex-1 items-center gap-4">
                   <CarImage src={o.cover_image} alt={o.listing_title} className="h-16 w-24 shrink-0 rounded-xl" />
                   <div className="min-w-0">
-                    <p className="truncate font-semibold hover:text-accent">{o.listing_title}</p>
+                    <p className="truncate font-semibold hover:text-ink">{o.listing_title}</p>
                     <p className="text-xs text-muted">
                       {box === "received" ? `From ${o.buyer.full_name} · ` : ""}{timeAgo(o.created_at)}
                     </p>
@@ -79,7 +79,7 @@ export function OffersTab() {
                   </div>
                 </Link>
                 <div className="flex items-center gap-4 sm:flex-col sm:items-end sm:gap-1">
-                  <p className="font-display text-lg font-black text-accent">{formatPrice(o.amount)}</p>
+                  <p className="font-display text-lg font-extrabold text-ink">{formatPrice(o.amount)}</p>
                   <p className="text-xs text-muted">{pct}% of {formatPrice(o.listing_price)}</p>
                   <span className={clsx("rounded-full px-2.5 py-0.5 text-[11px] font-bold uppercase tracking-wider", STATUS[o.status])}>
                     {o.status}

@@ -99,7 +99,7 @@ export function UsersTable() {
                   return (
                     <tr key={u.id} className={clsx("border-b border-line/40 last:border-0", !u.is_active && "opacity-60")}>
                       <td className="px-4 py-3">
-                        <p className="font-semibold">{u.full_name}{self && <span className="ml-2 text-xs text-accent">(you)</span>}</p>
+                        <p className="font-semibold">{u.full_name}{self && <span className="ml-2 text-xs text-ink">(you)</span>}</p>
                         <p className="text-xs text-muted">{u.email} · joined {timeAgo(u.created_at)}</p>
                       </td>
                       <td className="px-4 py-3">
@@ -123,7 +123,7 @@ export function UsersTable() {
                             text: u.is_active ? `Deactivate ${u.full_name}? They'll be signed out everywhere and can't sign in.` : `Reactivate ${u.full_name}?`,
                           })}
                           className={clsx("rounded-full px-3 py-1 text-xs font-bold uppercase tracking-wider disabled:cursor-not-allowed",
-                            u.is_active ? "bg-emerald-500/15 text-emerald-500 hover:bg-emerald-500/25" : "bg-accent/15 text-accent hover:bg-accent/25")}
+                            u.is_active ? "bg-emerald-500/15 text-emerald-500 hover:bg-emerald-500/25" : "bg-accent/15 text-ink hover:bg-accent/25")}
                           aria-label={`${u.is_active ? "Active" : "Deactivated"}. ${u.is_active ? "Deactivate" : "Reactivate"} ${u.full_name}`}>
                           {u.is_active ? "Active" : "Deactivated"}
                         </button>

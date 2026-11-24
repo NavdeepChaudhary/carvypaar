@@ -69,8 +69,8 @@ export function Speedometer({ value, low, high, marker }: SpeedometerProps) {
       <svg viewBox="0 0 320 230" className="w-full" role="img" aria-hidden>
         <defs>
           <linearGradient id={gradientId} x1="0" x2="1">
-            <stop offset="0%" stopColor="#00e5ff" />
-            <stop offset="100%" stopColor="#ff1f3d" />
+            <stop offset="0%" stopColor="#1d4ed8" />
+            <stop offset="100%" stopColor="#ffc107" />
           </linearGradient>
         </defs>
         {/* track */}
@@ -87,7 +87,7 @@ export function Speedometer({ value, low, high, marker }: SpeedometerProps) {
           initial={{ strokeDashoffset: 1, opacity: 0 }}
           animate={{ strokeDashoffset: 0, opacity: 1 }}
           transition={{ duration: reduce ? 0 : 1.1, delay: 0.3 }}
-          style={{ filter: "drop-shadow(0 0 8px rgba(255,31,61,0.6))" }}
+          style={{ filter: "drop-shadow(0 2px 6px rgba(245,180,0,0.45))" }}
         />
         {/* ticks + labels */}
         {ticks.map((t) => {
@@ -115,14 +115,14 @@ export function Speedometer({ value, low, high, marker }: SpeedometerProps) {
         })() : null}
         {/* needle */}
         <motion.g style={{ rotate: needle, originX: `${CX}px`, originY: `${CY}px` }}>
-          <polygon points={`${CX - 5},${CY} ${CX + 5},${CY} ${CX},${CY - R + 22}`} fill="#ff1f3d"
-            style={{ filter: "drop-shadow(0 0 6px rgba(255,31,61,0.9))" }} />
+          <polygon points={`${CX - 5},${CY} ${CX + 5},${CY} ${CX},${CY - R + 22}`} fill="rgb(var(--fg))"
+            style={{ filter: "drop-shadow(0 1px 2px rgba(0,0,0,0.25))" }} />
         </motion.g>
-        <circle cx={CX} cy={CY} r={12} fill="rgb(var(--surface))" stroke="#ff1f3d" strokeWidth={3} />
+        <circle cx={CX} cy={CY} r={12} fill="rgb(var(--surface))" stroke="#ffc107" strokeWidth={3} />
       </svg>
       <figcaption className="-mt-10 text-center">
         <p className="text-[11px] font-semibold uppercase tracking-[0.25em] text-muted">AI estimate</p>
-        <p className="font-display text-4xl font-black tabular-nums text-fg [text-shadow:0_0_22px_rgba(255,31,61,0.35)]">
+        <p className="font-display text-4xl font-extrabold tabular-nums text-fg">
           {formatPrice(display)}
         </p>
         <p className="mt-1 text-sm text-muted">

@@ -24,7 +24,7 @@ function Delta({ now, prev }: { now: number; prev: number }) {
   const flat = now === prev;
   const Icon = flat ? Minus : up ? ArrowUpRight : ArrowDownRight;
   return (
-    <span className={clsx("flex items-center gap-1 text-xs font-semibold", flat ? "text-muted" : up ? "text-emerald-500" : "text-accent")}>
+    <span className={clsx("flex items-center gap-1 text-xs font-semibold", flat ? "text-muted" : up ? "text-emerald-500" : "text-ink")}>
       <Icon className="h-3.5 w-3.5" aria-hidden />
       {pct === null ? `+${num.format(now)} (new)` : `${pct > 0 ? "+" : ""}${pct}%`}
       <span className="font-normal text-muted">vs previous 7 days</span>

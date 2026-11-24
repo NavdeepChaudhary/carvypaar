@@ -14,21 +14,21 @@ const ThemeContext = createContext<ThemeContextValue | null>(null);
 
 /**
  * Inline script run before React hydrates, so the page never flashes the wrong theme.
- * Dark is the default brand look.
+ * Light is the default brand look; dark only when the visitor chose it.
  */
-export const themeInitScript = `(function(){try{var t=localStorage.getItem('${THEME_STORAGE_KEY}');if(t!=='light'){document.documentElement.classList.add('dark');}}catch(e){document.documentElement.classList.add('dark');}})();`;
+export const themeInitScript = `(function(){try{if(localStorage.getItem('${THEME_STORAGE_KEY}')==='dark'){document.documentElement.classList.add('dark');}}catch(e){}})();`;
 
 export function ThemeProvider({ children }: { children: ReactNode }) {
-  const [theme, setTheme] = useState<Theme>("dark");
+  const [theme, setTheme] = useState<Theme>("light");
 
   // Restore from the saved preference (not from the DOM class, which React can
   // reset if it ever has to re-render the document) and re-apply the class.
   useEffect(() => {
-    let saved: Theme = "dark";
+    let saved: Theme = "light";
     try {
-      saved = localStorage.getItem(THEME_STORAGE_KEY) === "light" ? "light" : "dark";
+      saved = localStorage.getItem(THEME_STORAGE_KEY) === "dark" ? "dark" : "light";
     } catch {
-      /* storage blocked: keep the dark default */
+      /* storage blocked: keep the light default */
     }
     document.documentElement.classList.toggle("dark", saved === "dark");
     setTheme(saved);

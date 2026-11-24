@@ -56,7 +56,7 @@ export const Select = forwardRef<HTMLSelectElement, SelectProps>(function Select
         <ChevronDown className="pointer-events-none absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted" aria-hidden />
       </div>
       {error && (
-        <p id={`${id}-error`} role="alert" className="text-xs text-accent">
+        <p id={`${id}-error`} role="alert" className="text-xs text-ink">
           {error}
         </p>
       )}

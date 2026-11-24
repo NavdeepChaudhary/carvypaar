@@ -14,9 +14,9 @@ import { formatPrice } from "@/lib/format";
 import type { BidOutcome, MyBid } from "@/lib/types";
 
 const OUTCOME: Record<BidOutcome, { label: string; className: string }> = {
-  leading: { label: "Winning", className: "bg-emerald-500/15 text-emerald-400" },
-  outbid: { label: "Outbid", className: "bg-amber-500/15 text-amber-400" },
-  won: { label: "Won 🏆", className: "bg-emerald-500/20 text-emerald-300" },
+  leading: { label: "Winning", className: "bg-emerald-500/15 text-emerald-600 dark:text-emerald-400" },
+  outbid: { label: "Outbid", className: "bg-amber-500/15 text-amber-700 dark:text-amber-400" },
+  won: { label: "Won 🏆", className: "bg-emerald-500/20 text-emerald-600 dark:text-emerald-400" },
   lost: { label: "Lost", className: "bg-muted/15 text-muted" },
   upcoming: { label: "Upcoming", className: "bg-neon/15 text-neon" },
   cancelled: { label: "Cancelled", className: "bg-muted/15 text-muted" },
@@ -42,7 +42,7 @@ export function MyBidsTab() {
   if (!sorted.length) {
     return (
       <EmptyState icon={Gavel} title="No bids yet" body="Join a live auction and your bids will show up here."
-        action={<Link href="/auctions" className="rounded-xl bg-accent px-6 py-3 font-semibold text-white hover:shadow-glow">See live auctions</Link>} />
+        action={<Link href="/auctions" className="rounded-xl bg-accent px-6 py-3 font-semibold text-on-accent hover:shadow-glow">See live auctions</Link>} />
     );
   }
 

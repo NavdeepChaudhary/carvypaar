@@ -67,7 +67,7 @@ export function Gallery({ images, title }: { images: ListingImage[]; title: stri
             }}
             aria-label={d < 0 ? "Previous photo" : "Next photo"}
             className={clsx(
-              "absolute top-1/2 z-10 grid -translate-y-1/2 place-items-center rounded-full border border-white/20 bg-black/50 text-white backdrop-blur transition hover:border-accent hover:bg-accent",
+              "absolute top-1/2 z-10 grid -translate-y-1/2 place-items-center rounded-full border border-white/20 bg-black/50 text-on-accent backdrop-blur transition hover:border-accent hover:bg-accent",
               big ? "h-14 w-14" : "h-11 w-11 opacity-0 group-hover:opacity-100 focus-visible:opacity-100",
               d < 0 ? (big ? "left-4" : "left-3") : big ? "right-4" : "right-3",
             )}
@@ -106,7 +106,7 @@ export function Gallery({ images, title }: { images: ListingImage[]; title: stri
         <button
           type="button"
           onClick={() => setLightbox(true)}
-          className="absolute bottom-4 right-4 z-10 flex items-center gap-2 rounded-full bg-black/60 px-3 py-2 text-xs font-semibold text-white backdrop-blur hover:bg-accent"
+          className="absolute bottom-4 right-4 z-10 flex items-center gap-2 rounded-full bg-black/60 px-3 py-2 text-xs font-semibold text-on-accent backdrop-blur hover:bg-accent"
         >
           <Expand className="h-3.5 w-3.5" aria-hidden /> {index + 1} / {count}
         </button>
@@ -153,7 +153,7 @@ export function Gallery({ images, title }: { images: ListingImage[]; title: stri
                 <button
                   type="button"
                   onClick={() => setLightbox(false)}
-                  className="absolute right-4 top-4 z-10 grid h-12 w-12 place-items-center rounded-full bg-white/10 text-white hover:bg-accent"
+                  className="absolute right-4 top-4 z-10 grid h-12 w-12 place-items-center rounded-full bg-white/10 text-on-accent hover:bg-accent"
                   aria-label="Close photos"
                   autoFocus
                 >

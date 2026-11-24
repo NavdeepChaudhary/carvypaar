@@ -62,7 +62,7 @@ function LoginForm() {
       />
     <form onSubmit={onSubmit} noValidate className="space-y-5">
       {errors.form && (
-        <div role="alert" className="rounded-xl border border-accent/40 bg-accent/10 px-4 py-3 text-sm text-accent">
+        <div role="alert" className="rounded-xl border border-accent/40 bg-accent/10 px-4 py-3 text-sm text-ink">
           {errors.form}
         </div>
       )}
@@ -89,7 +89,7 @@ function LoginForm() {
       </Button>
       <p className="text-center text-sm text-muted">
         New here?{" "}
-        <Link href={`/register?next=${encodeURIComponent(next)}`} className="font-semibold text-accent hover:underline">
+        <Link href={`/register?next=${encodeURIComponent(next)}`} className="font-semibold text-ink hover:underline">
           Create an account
         </Link>
       </p>

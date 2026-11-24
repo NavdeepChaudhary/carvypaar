@@ -83,7 +83,7 @@ export function ListingsQueue({ onChanged }: { onChanged?: () => void }) {
             <button key={f.id} type="button" role="tab" aria-selected={status === f.id}
               onClick={() => { setStatus(f.id); setPage(1); }}
               className={clsx("rounded-full px-3.5 py-1.5 text-xs font-semibold transition-colors",
-                status === f.id ? "bg-accent text-white" : "border border-line text-muted hover:text-fg")}>
+                status === f.id ? "bg-accent text-on-accent" : "border border-line text-muted hover:text-fg")}>
               {f.label}
             </button>
           ))}
@@ -114,11 +114,11 @@ export function ListingsQueue({ onChanged }: { onChanged?: () => void }) {
                   <CarImage src={l.cover_image} alt={l.title} className="h-20 w-full shrink-0 rounded-xl md:w-32" />
                   <div className="min-w-0 flex-1">
                     <div className="flex flex-wrap items-center gap-2">
-                      <Link href={`/cars/${l.id}`} target="_blank" className="truncate font-semibold hover:text-accent">
+                      <Link href={`/cars/${l.id}`} target="_blank" className="truncate font-semibold hover:text-ink">
                         {l.title} <ExternalLink className="inline h-3 w-3" aria-label="(opens in a new tab)" />
                       </Link>
                       <span className={clsx("rounded-full px-2 py-0.5 text-[10px] font-bold uppercase", s.className)}>{s.label}</span>
-                      {l.listing_type === "auction" && <span className="rounded-full bg-accent/15 px-2 py-0.5 text-[10px] font-bold uppercase text-accent">Auction</span>}
+                      {l.listing_type === "auction" && <span className="rounded-full bg-accent/15 px-2 py-0.5 text-[10px] font-bold uppercase text-ink">Auction</span>}
                     </div>
                     <p className="mt-1 text-sm">
                       <span className="font-semibold">{formatPrice(l.price)}</span>
@@ -158,7 +158,7 @@ export function ListingsQueue({ onChanged }: { onChanged?: () => void }) {
           <div className="flex flex-wrap gap-2">
             {REJECT_REASONS.map((r) => (
               <button key={r} type="button" onClick={() => setReason(r)}
-                className="rounded-full border border-line px-3 py-1.5 text-xs hover:border-accent hover:text-accent">{r}</button>
+                className="rounded-full border border-line px-3 py-1.5 text-xs hover:border-accent hover:text-ink">{r}</button>
             ))}
           </div>
           <TextArea label="Reason" value={reason} onChange={(e) => setReason(e.target.value)} maxLength={500} rows={3} required
