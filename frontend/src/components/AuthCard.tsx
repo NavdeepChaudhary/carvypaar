@@ -13,13 +13,12 @@ const PERKS = [
   { icon: BadgeCheck, text: "Every listing reviewed before it goes live" },
 ];
 
-// ---- Tachometer: revs up when the page opens, then settles at idle. ----
+// ---- Dashboard gauges: the needle revs up when the page opens, then settles. ----
 const CX = 110;
 const CY = 110;
 const R = 88;
 const START = -125; // degrees, 0 = straight up
 const SWEEP = 250;
-const MAX_RPM = 8;
 
 function polar(angle: number, radius: number) {
   const rad = ((angle - 90) * Math.PI) / 180;
@@ -30,44 +29,83 @@ function arc(from: number, to: number, radius = R) {
   const b = polar(to, radius);
   return `M ${a.x} ${a.y} A ${radius} ${radius} 0 ${to - from > 180 ? 1 : 0} 1 ${b.x} ${b.y}`;
 }
-const rpmAngle = (rpm: number) => START + (rpm / MAX_RPM) * SWEEP;
 
-function Tachometer() {
+type GaugeProps = {
+  max: number;
+  /** Numbered tick every `major`; plain tick every `minor`. */
+  major: number;
+  minor: number;
+  /** Red arc starts here; ticks at or above `redTicksFrom` are red. */
+  redFrom: number;
+  redTicksFrom: number;
+  label: string;
+  /** Needle path on load: up to `peak`, back to `dip`, then rests at `rest`. */
+  peak: number;
+  dip: number;
+  rest: number;
+  delay?: number;
+};
+
+function DashGauge({ max, major, minor, redFrom, redTicksFrom, label, peak, dip, rest, delay = 0.3 }: GaugeProps) {
   const reduce = useReducedMotion();
-  const idle = rpmAngle(1.2);
+  const angle = (v: number) => START + (v / max) * SWEEP;
+  const ticks = Array.from({ length: Math.round(max / minor) + 1 }, (_, i) => i * minor);
   return (
-    <svg viewBox="0 0 220 190" className="w-44 drop-shadow-[0_8px_24px_rgba(0,0,0,0.45)]" aria-hidden>
+    <svg viewBox="0 0 220 190" className="w-40 drop-shadow-[0_8px_24px_rgba(0,0,0,0.45)] xl:w-44" aria-hidden>
       <circle cx={CX} cy={CY} r={R + 14} className="fill-navy/80 stroke-white/10" strokeWidth={2} />
       <path d={arc(START, START + SWEEP)} className="fill-none stroke-white/15" strokeWidth={8} strokeLinecap="round" />
-      {/* redline */}
-      <path d={arc(rpmAngle(6.5), START + SWEEP)} className="fill-none stroke-red-500" strokeWidth={8} strokeLinecap="round" />
-      {Array.from({ length: MAX_RPM + 1 }, (_, i) => {
-        const a = polar(rpmAngle(i), R - 12);
-        const b = polar(rpmAngle(i), R - 2);
-        const t = polar(rpmAngle(i), R - 26);
+      <path d={arc(angle(redFrom), START + SWEEP)} className="fill-none stroke-red-500" strokeWidth={8} strokeLinecap="round" />
+      {ticks.map((v) => {
+        const isMajor = v % major === 0;
+        const a = polar(angle(v), R - (isMajor ? 12 : 8));
+        const b = polar(angle(v), R - 2);
+        const t = polar(angle(v), R - 26);
         return (
-          <g key={i}>
-            <line x1={a.x} y1={a.y} x2={b.x} y2={b.y} className={i >= 7 ? "stroke-red-400" : "stroke-white/70"} strokeWidth={2} />
-            <text x={t.x} y={t.y + 4} textAnchor="middle" className="fill-white/70 font-display text-[11px] font-semibold">
-              {i}
-            </text>
+          <g key={v}>
+            <line
+              x1={a.x}
+              y1={a.y}
+              x2={b.x}
+              y2={b.y}
+              className={v >= redTicksFrom ? "stroke-red-400" : isMajor ? "stroke-white/70" : "stroke-white/35"}
+              strokeWidth={isMajor ? 2 : 1.5}
+            />
+            {isMajor && (
+              <text x={t.x} y={t.y + 4} textAnchor="middle" className="fill-white/70 font-display text-[11px] font-semibold">
+                {v}
+              </text>
+            )}
           </g>
         );
       })}
       <text x={CX} y={CY + 34} textAnchor="middle" className="fill-white/50 text-[8px] font-semibold tracking-[0.25em]">
-        RPM ×1000
+        {label}
       </text>
       <motion.g
         style={{ originX: `${CX}px`, originY: `${CY}px` }}
-        initial={{ rotate: reduce ? idle : START }}
-        animate={{ rotate: reduce ? idle : [START, rpmAngle(7.4), rpmAngle(3), idle] }}
-        transition={{ duration: 1.8, times: [0, 0.35, 0.65, 1], ease: "easeInOut", delay: 0.3 }}
+        initial={{ rotate: reduce ? angle(rest) : START }}
+        animate={{ rotate: reduce ? angle(rest) : [START, angle(peak), angle(dip), angle(rest)] }}
+        transition={{ duration: 1.8, times: [0, 0.35, 0.65, 1], ease: "easeInOut", delay }}
       >
         <line x1={CX} y1={CY + 10} x2={CX} y2={CY - R + 16} className="stroke-accent" strokeWidth={3.5} strokeLinecap="round" />
       </motion.g>
       <circle cx={CX} cy={CY} r={8} className="fill-accent" />
       <circle cx={CX} cy={CY} r={3} className="fill-navy" />
     </svg>
+  );
+}
+
+/** Rev counter: revs to the redline, then idles. */
+function Tachometer() {
+  return (
+    <DashGauge max={8} major={1} minor={1} redFrom={6.5} redTicksFrom={7} label="RPM ×1000" peak={7.4} dip={3} rest={1.2} />
+  );
+}
+
+/** Speedometer: sweeps up alongside the rev counter, then rests at zero (parked). */
+function Speedometer() {
+  return (
+    <DashGauge max={240} major={40} minor={20} redFrom={200} redTicksFrom={220} label="KM/H" peak={225} dip={90} rest={0} delay={0.45} />
   );
 }
 
@@ -84,8 +122,8 @@ function Road({ className = "" }: { className?: string }) {
 }
 
 /**
- * The sign-in / sign-up page: a car-dashboard panel on the left (photo, a tachometer that
- * revs on load, perks) and the form on the right, over racing stripes. Shared by login & register.
+ * The sign-in / sign-up page: a car-dashboard panel on the left (photo, a rev counter and
+ * speedometer that rev up on load, perks) and the form on the right, over racing stripes. Shared by login & register.
  */
 export function AuthCard({
   eyebrow,
@@ -122,8 +160,9 @@ export function AuthCard({
             <div className="relative flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.3em] text-accent">
               <span className="h-2 w-2 rounded-full bg-accent motion-safe:animate-pulse-glow" /> Engine on
             </div>
-            <div className="relative mt-8 flex justify-center">
+            <div className="relative mt-8 flex items-center justify-center gap-2 xl:gap-4">
               <Tachometer />
+              <Speedometer />
             </div>
             <div className="relative mt-auto">
               <p className="font-display text-3xl font-bold leading-tight">
