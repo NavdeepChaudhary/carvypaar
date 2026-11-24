@@ -52,13 +52,39 @@ export default function PriceCheckPage() {
   const [loading, setLoading] = useState(false);
   const [makes, setMakes] = useState<MakeModels[]>([]);
   const [info, setInfo] = useState<ModelInfo | null>(null);
+  // True while the status check keeps failing (e.g. the free server is still waking up).
+  // Not the same as "no model": the form stays usable and the check keeps retrying.
+  const [unreachable, setUnreachable] = useState(false);
   const resultRef = useRef<HTMLDivElement>(null);
   const makeList = useId();
   const modelList = useId();
 
   useEffect(() => {
-    listingsApi.makes().then(setMakes).catch(() => undefined);
-    priceApi.model().then(setInfo).catch(() => setInfo({ available: false }));
+    let cancelled = false;
+    let timer: number | undefined;
+    const loadInfo = (attempt: number) => {
+      priceApi
+        .model()
+        .then((i) => {
+          if (cancelled) return;
+          setInfo(i);
+          setUnreachable(false);
+        })
+        .catch(() => {
+          if (cancelled) return;
+          if (attempt >= 1) setUnreachable(true); // first retry failed too: say so, keep trying
+          if (attempt < 6) timer = window.setTimeout(() => loadInfo(attempt + 1), 10_000);
+        });
+    };
+    if (STATIC_DEMO) setInfo({ available: false });
+    else {
+      listingsApi.makes().then(setMakes).catch(() => undefined);
+      loadInfo(0);
+    }
+    return () => {
+      cancelled = true;
+      window.clearTimeout(timer);
+    };
   }, []);
 
   const set = (k: keyof Form) => (e: { target: { value: string } }) => {
@@ -110,9 +136,13 @@ export default function PriceCheckPage() {
       {info && !info.available && (
         <div role="alert" className="mt-6 flex items-start gap-3 rounded-2xl border border-amber-500/40 bg-amber-500/10 p-4 text-sm text-amber-700 dark:text-amber-400">
           <AlertTriangle className="mt-0.5 h-5 w-5 shrink-0" aria-hidden />
-          {STATIC_DEMO ? DEMO_MESSAGE : (
-            <>The price model isn&apos;t trained yet. Run <code className="rounded bg-black/30 px-1.5">python ml/scripts/train.py</code> and refresh.</>
-          )}
+          {STATIC_DEMO ? DEMO_MESSAGE : "Price checks are switched off right now. Please try again later."}
+        </div>
+      )}
+      {unreachable && !info && (
+        <div role="status" className="mt-6 flex items-start gap-3 rounded-2xl border border-amber-500/40 bg-amber-500/10 p-4 text-sm text-amber-700 dark:text-amber-400">
+          <AlertTriangle className="mt-0.5 h-5 w-5 shrink-0" aria-hidden />
+          The price checker is waking up. This can take up to a minute after a quiet spell; you can fill in the form meanwhile.
         </div>
       )}
 
