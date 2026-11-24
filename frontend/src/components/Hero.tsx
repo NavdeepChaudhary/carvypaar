@@ -2,30 +2,18 @@
 
 import { clsx } from "clsx";
 import { motion } from "framer-motion";
-import { BadgeCheck, Car, Gauge, Gavel, Hand, Search, Tag } from "lucide-react";
-import dynamic from "next/dynamic";
+import { BadgeCheck, Car, Gauge, Gavel, Search, Tag } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState, type FormEvent } from "react";
 
 import { BODY_OPTIONS, FUEL_OPTIONS } from "@/lib/constants";
 
-// Three.js only runs in the browser, and the hero text shouldn't wait for it.
-const CarScene = dynamic(() => import("./three/CarScene").then((m) => m.CarScene), {
-  ssr: false,
-  loading: () => <CarPlaceholder />,
-});
-
 const SCENERY =
   "https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?auto=format&fit=crop&w=2400&q=70";
 
-const PAINTS = [
-  { name: "Racing yellow", hex: "#ffc107" },
-  { name: "Midnight blue", hex: "#1e3a8a" },
-  { name: "Rosso red", hex: "#d11a2a" },
-  { name: "Pearl white", hex: "#eef1f5" },
-  { name: "Graphite", hex: "#3a3f4b" },
-];
+const HERO_CAR =
+  "https://images.unsplash.com/photo-1555215695-3004980ad54e?auto=format&fit=crop&w=1600&q=80";
 
 const PRICE_OPTIONS = [
   { value: "", label: "Any price" },
@@ -48,23 +36,13 @@ const TABS: { id: Tab; label: string; icon: typeof Car }[] = [
   { id: "sell", label: "Sell my car", icon: Tag },
 ];
 
-function CarPlaceholder() {
-  return (
-    <div className="grid h-full w-full place-items-center">
-      <Car className="h-24 w-24 animate-pulse text-fg/10" aria-hidden />
-    </div>
-  );
-}
-
 const fieldClass =
   "h-12 w-full rounded-lg border border-line bg-bg px-3 text-sm text-fg focus:border-accent focus:outline-none";
 const labelClass = "mb-1.5 block text-xs font-semibold text-muted";
 
-/** Homepage hero: headline, interactive 3D car and the tabbed search panel. */
+/** Homepage hero: headline, featured car photo and the tabbed search panel. */
 export function Hero() {
   const router = useRouter();
-  const [paint, setPaint] = useState(PAINTS[0].hex);
-  const [webgl, setWebgl] = useState(true);
   const [tab, setTab] = useState<Tab>("buy");
   const [query, setQuery] = useState("");
   const [body, setBody] = useState("");
@@ -144,51 +122,18 @@ export function Hero() {
             </motion.ul>
           </div>
 
-          {/* Interactive 3D car */}
+          {/* Featured car photo */}
           <motion.div
-            initial={{ opacity: 0, scale: 0.96 }}
-            animate={{ opacity: 1, scale: 1 }}
+            initial={{ opacity: 0, x: 40 }}
+            animate={{ opacity: 1, x: 0 }}
             transition={{ delay: 0.15, duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
             className="relative"
           >
-            <div className="relative aspect-[4/3] w-full cursor-grab active:cursor-grabbing lg:aspect-[5/4]">
-              {webgl ? (
-                <CarScene paint={paint} onUnsupported={() => setWebgl(false)} className="absolute inset-0" />
-              ) : (
-                <div
-                  role="img"
-                  aria-label="A sports car"
-                  className="absolute inset-0 rounded-3xl bg-cover bg-center"
-                  style={{ backgroundImage: `url(${SCENERY})` }}
-                />
-              )}
-              {webgl && (
-                <p className="pointer-events-none absolute left-1/2 top-3 flex -translate-x-1/2 items-center gap-1.5 rounded-full bg-surface/80 px-3 py-1 text-xs font-medium text-muted shadow-card backdrop-blur">
-                  <Hand className="h-3.5 w-3.5" aria-hidden /> Drag to look around
-                </p>
-              )}
+            <div aria-hidden className="absolute -inset-4 rounded-[2rem] bg-accent/20 blur-2xl" />
+            <div className="relative aspect-[4/3] overflow-hidden rounded-3xl border-4 border-surface shadow-lift">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src={HERO_CAR} alt="A white BMW sports sedan" className="h-full w-full object-cover" />
             </div>
-            {webgl && (
-              <div className="mt-1 flex items-center justify-center gap-3" role="radiogroup" aria-label="Paint colour">
-                <span className="text-xs font-semibold uppercase tracking-wider text-muted">Paint</span>
-                {PAINTS.map((p) => (
-                  <button
-                    key={p.hex}
-                    type="button"
-                    role="radio"
-                    aria-checked={paint === p.hex}
-                    aria-label={p.name}
-                    title={p.name}
-                    onClick={() => setPaint(p.hex)}
-                    className={clsx(
-                      "h-7 w-7 rounded-full border-2 shadow-card transition-transform hover:scale-110",
-                      paint === p.hex ? "scale-110 border-fg" : "border-surface",
-                    )}
-                    style={{ backgroundColor: p.hex }}
-                  />
-                ))}
-              </div>
-            )}
           </motion.div>
         </div>
       </div>
