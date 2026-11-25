@@ -114,11 +114,42 @@ def test_delete_listing(client, seller):
     assert client.get(f"/api/listings/{car['id']}").status_code == 404
 
 
-def test_detail_counts_views_but_not_owner(client, seller):
+def test_views_count_once_per_device_not_per_reload(client, seller):
     car = create_car(client, seller["access_token"])
-    client.get(f"/api/listings/{car['id']}")
-    client.get(f"/api/listings/{car['id']}", headers=auth_header(seller["access_token"]))
-    assert client.get(f"/api/listings/{car['id']}").json()["views_count"] == 2
+    url = f"/api/listings/{car['id']}"
+
+    # Reading a listing never counts (server-side renders, link previews, refreshes).
+    for _ in range(3):
+        assert client.get(url).json()["views_count"] == 0
+
+    # First view from this browser counts and hands it a device cookie...
+    first = client.post(f"{url}/view")
+    assert first.status_code == 200 and first.json() == {"views_count": 1, "counted": True}
+    device = client.cookies.get("cv_device")
+    assert device and len(device) == 32
+    # ...and reloading the page any number of times doesn't.
+    for _ in range(3):
+        assert client.post(f"{url}/view").json() == {"views_count": 1, "counted": False}
+    assert client.cookies.get("cv_device") == device
+
+    # A different device counts once too.
+    client.cookies.clear()
+    assert client.post(f"{url}/view").json() == {"views_count": 2, "counted": True}
+    # A tampered cookie is replaced with a fresh id instead of being trusted.
+    client.cookies.clear()
+    tampered = client.post(f"{url}/view", cookies={"cv_device": "not-a-device-id"})
+    assert tampered.json()["counted"] is True
+    assert "cv_device=" in tampered.headers["set-cookie"] and "not-a-device-id" not in tampered.headers["set-cookie"]
+
+    # The seller's own views never count, even from a new device.
+    client.cookies.clear()
+    own = client.post(f"{url}/view", headers=auth_header(seller["access_token"])).json()
+    assert own == {"views_count": 3, "counted": False}
+    assert client.get(url).json()["views_count"] == 3
+
+
+def test_view_of_missing_listing_is_404(client):
+    assert client.post("/api/listings/999999/view").status_code == 404
 
 
 # ---------------------------------------------------------------- search

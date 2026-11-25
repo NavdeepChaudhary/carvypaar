@@ -11,7 +11,17 @@ from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session, selectinload
 
 from app.core.config import settings
-from app.models import AuctionStatus, Favorite, Listing, ListingImage, ListingStatus, ListingType, User, UserRole
+from app.models import (
+    AuctionStatus,
+    Favorite,
+    Listing,
+    ListingImage,
+    ListingStatus,
+    ListingType,
+    ListingView,
+    User,
+    UserRole,
+)
 from app.schemas.common import Page
 from app.schemas.listing import (
     ImageRead,
@@ -236,13 +246,22 @@ def get_managed_listing(db: Session, listing_id: int, user: User) -> Listing:
     return listing
 
 
-def record_view(db: Session, listing: Listing, viewer: User | None) -> None:
+def record_view(db: Session, listing: Listing, viewer: User | None, device_id: str) -> bool:
+    """Count a view once per device (the seller's own views never count). Returns True if
+    this device hadn't viewed the listing before, i.e. the counter went up."""
     if viewer is not None and viewer.id == listing.seller_id:
-        return
+        return False
+    db.add(ListingView(listing_id=listing.id, device_id=device_id))
+    try:
+        db.flush()
+    except IntegrityError:  # this device already counted (unique listing_id + device_id)
+        db.rollback()  # nothing else is pending in this request's transaction
+        return False
     # Atomic SQL increment (no lost updates under concurrency). SQLAlchemy's
     # session synchronisation also bumps the in-memory `listing.views_count`.
     db.execute(update(Listing).where(Listing.id == listing.id).values(views_count=Listing.views_count + 1))
     db.commit()
+    return True
 
 
 def user_listings(db: Session, user: User) -> list[ListingCard]:

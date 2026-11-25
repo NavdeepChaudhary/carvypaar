@@ -5,12 +5,15 @@ JSON responses by handlers registered in app.main.
 """
 from __future__ import annotations
 
+import re
+import secrets
 from typing import Annotated
 
 from fastapi import APIRouter, Depends, File, Query, Request, Response, UploadFile, status
 from sqlalchemy.orm import Session
 
 from app.api.deps import get_current_user, get_optional_user, require_roles
+from app.core.config import settings
 from app.core.rate_limit import limiter
 from app.db.session import get_db
 from app.models import User, UserRole
@@ -24,6 +27,7 @@ from app.schemas.listing import (
     ListingDetail,
     ListingFilters,
     ListingUpdate,
+    ListingViewResult,
     MakeModels,
 )
 from app.services import interaction_service as interactions
@@ -56,8 +60,35 @@ def detail(
     listing_id: int, db: Session = Depends(get_db), viewer: User | None = Depends(get_optional_user)
 ) -> ListingDetail:
     listing = svc.get_visible_listing(db, listing_id, viewer)
-    svc.record_view(db, listing, viewer)
     return svc.to_detail(db, listing, viewer)
+
+
+# Anonymous per-browser id, so a listing counts each device once however often it's reloaded.
+DEVICE_COOKIE = "cv_device"
+_DEVICE_ID = re.compile(r"^[0-9a-f]{32}$")
+_DEVICE_COOKIE_MAX_AGE = 2 * 365 * 24 * 3600
+
+
+@router.post("/{listing_id}/view", response_model=ListingViewResult)
+@limiter.limit("60/minute")
+def record_view(
+    request: Request,
+    response: Response,
+    listing_id: int,
+    db: Session = Depends(get_db),
+    viewer: User | None = Depends(get_optional_user),
+) -> ListingViewResult:
+    """The car page calls this once it has opened. Reading a listing (GET) doesn't count,
+    so server-side page renders, link previews and refreshes don't inflate the number."""
+    listing = svc.get_visible_listing(db, listing_id, viewer)
+    device_id = request.cookies.get(DEVICE_COOKIE, "")
+    if not _DEVICE_ID.match(device_id):
+        device_id = secrets.token_hex(16)
+    # (Re)set every time: keeps the cookie alive for two years after the last visit.
+    response.set_cookie(DEVICE_COOKIE, device_id, max_age=_DEVICE_COOKIE_MAX_AGE, httponly=True,
+                        secure=settings.COOKIE_SECURE, samesite="lax", path=f"{settings.API_PREFIX}/listings")
+    counted = svc.record_view(db, listing, viewer, device_id)
+    return ListingViewResult(views_count=listing.views_count, counted=counted)
 
 
 # ---------------------------------------------------------------- write

@@ -204,3 +204,8 @@ class ListingFilters(BaseModel):
         if self.min_year is not None and self.max_year is not None and self.min_year > self.max_year:
             raise ValueError("min_year cannot exceed max_year")
         return self
+
+
+class ListingViewResult(BaseModel):
+    views_count: int
+    counted: bool  # False when this device had already viewed the listing (or it's the seller's own)

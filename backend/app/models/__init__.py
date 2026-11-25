@@ -1,7 +1,7 @@
 """Import every model here so SQLAlchemy relationships resolve and Alembic's
 autogenerate sees the full metadata."""
 from app.models.auction import Auction, Bid
-from app.models.car import Favorite, Listing, ListingImage
+from app.models.car import Favorite, Listing, ListingImage, ListingView
 from app.models.enums import (
     AuctionStatus,
     BodyType,
@@ -29,6 +29,7 @@ __all__ = [
     "Listing",
     "ListingImage",
     "ListingStatus",
+    "ListingView",
     "ListingType",
     "Message",
     "Notification",

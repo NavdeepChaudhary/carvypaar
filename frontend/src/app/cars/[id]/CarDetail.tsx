@@ -70,7 +70,14 @@ export default function CarDetailPage() {
     }
     listingsApi
       .get(id)
-      .then(setCar)
+      .then((loaded) => {
+        setCar(loaded);
+        // Opening the page counts as a view once per device; the API ignores repeats.
+        listingsApi
+          .recordView(id)
+          .then(({ views_count }) => setCar((c) => (c && c.id === id ? { ...c, views_count } : c)))
+          .catch(() => undefined); // a missed view count must never break the page
+      })
       .catch((err) =>
         setError(err instanceof ApiError ? { status: err.status, message: err.message } : { status: 0, message: "Couldn't load this car" }),
       );

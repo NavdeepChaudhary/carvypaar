@@ -117,3 +117,18 @@ class Favorite(Base):
 
     user: Mapped[User] = relationship(back_populates="favorites")
     listing: Mapped[Listing] = relationship(back_populates="favorites")
+
+
+class ListingView(Base):
+    """One row per (listing, device) that has viewed it, so `Listing.views_count` counts
+    devices, not page loads. A device is an anonymous random id kept in a cookie."""
+
+    __tablename__ = "listing_views"
+    __table_args__ = (UniqueConstraint("listing_id", "device_id", name="uq_listing_views_listing_device"),)
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    listing_id: Mapped[int] = mapped_column(ForeignKey("listings.id", ondelete="CASCADE"), index=True)
+    device_id: Mapped[str] = mapped_column(String(64))
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), server_default=func.now(), nullable=False
+    )

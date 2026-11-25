@@ -28,6 +28,9 @@ export const listingsApi = {
     apiFetch<Page<ListingCard>>(`/api/listings${toQueryString(params)}`, { signal }),
   makes: () => apiFetch<MakeModels[]>("/api/listings/makes", { auth: false }),
   get: (id: number) => apiFetch<ListingDetail>(`/api/listings/${id}`),
+  /** Counts one view per device (the API keeps an anonymous device cookie); reloads don't add more. */
+  recordView: (id: number) =>
+    apiFetch<{ views_count: number; counted: boolean }>(`/api/listings/${id}/view`, { method: "POST" }),
   create: (data: ListingInput) => apiFetch<ListingDetail>("/api/listings", { method: "POST", body: data }),
   update: (id: number, data: Partial<ListingInput> & { status?: Exclude<ListingStatus, "pending" | "rejected"> }) =>
     apiFetch<ListingDetail>(`/api/listings/${id}`, { method: "PATCH", body: data }),
