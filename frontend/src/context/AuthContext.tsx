@@ -26,6 +26,14 @@ const AuthContext = createContext<AuthContextValue | null>(null);
 
 type ApplySession = (session: AuthResponse | null) => void;
 
+/** How long sign-in keeps retrying while the API server wakes from sleep. */
+const WAKE_TIMEOUT_MS = 90_000;
+
+/** Errors a sleeping or still-booting server gives: unreachable, or a gateway error. */
+function isWakingUp(err: unknown): boolean {
+  return err instanceof ApiError && (err.status === 0 || err.status === 502 || err.status === 503 || err.status === 504);
+}
+
 /** Keeps the CarVypaar session in step with Clerk's. Rendered only when Clerk is configured. */
 function ClerkSessionSync({
   applySession,
@@ -46,15 +54,33 @@ function ClerkSessionSync({
     let cancelled = false;
     (async () => {
       if (isSignedIn) {
+        // The free API server sleeps when idle; while it boots (up to about a minute) its
+        // host answers 502/503/504 or drops the connection. Keep trying through that.
+        const deadline = Date.now() + WAKE_TIMEOUT_MS;
+        let wakingToast: string | number | undefined;
         try {
-          const token = await getToken();
-          if (!token) throw new ApiError("Couldn't read your sign-in session", 401);
-          const session = await apiFetch<AuthResponse>("/api/auth/clerk", { method: "POST", body: { token }, auth: false });
-          if (!cancelled) applySession(session);
+          for (let attempt = 0; ; attempt++) {
+            try {
+              // A fresh Clerk token each time: they only live about a minute.
+              const token = await getToken({ skipCache: attempt > 0 });
+              if (!token) throw new ApiError("Couldn't read your sign-in session", 401);
+              const session = await apiFetch<AuthResponse>("/api/auth/clerk", { method: "POST", body: { token }, auth: false });
+              if (!cancelled) applySession(session);
+              break;
+            } catch (err) {
+              if (cancelled) return;
+              if (!isWakingUp(err) || Date.now() > deadline) throw err;
+              wakingToast ??= toast.loading("Waking up the server… this can take up to a minute.");
+              await new Promise((r) => setTimeout(r, Math.min(2_000 * 2 ** attempt, 8_000)));
+              if (cancelled) return;
+            }
+          }
         } catch (err) {
           if (cancelled) return;
           applySession(null);
           toast.error(err instanceof ApiError ? err.message : "Couldn't sign you in. Please try again.");
+        } finally {
+          if (wakingToast !== undefined) toast.dismiss(wakingToast);
         }
       } else if (hasSession()) {
         // Signed out of Clerk (here or in another tab): end the CarVypaar session too.
